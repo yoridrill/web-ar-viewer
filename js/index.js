@@ -181,9 +181,10 @@ try {
                 arData[idx].main.appendChild(scaleAnim);
             } else if (idx === 0 && val.isShadow) {
                 var rotateAnim = document.createElement('a-animation');
-                rotateAnim.setAttribute('to', (val.isWarp ? 0 : -90) + ' -360 0');
+                rotateAnim.setAttribute('to', (val.isWarp ? 0 : -90) + ' 360 0');
                 rotateAnim.setAttribute('dur', '20000');
                 rotateAnim.setAttribute('easing', 'linear');
+                rotateAnim.setAttribute('direction', 'reverse');
                 rotateAnim.setAttribute('repeat', 'indefinite');
                 arData[idx].main.appendChild(rotateAnim);
             }

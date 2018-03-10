@@ -1,0 +1,55 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="WebARビューアー" />
+    <meta name="twitter:image" content="https://yoridrill.github.io/web-ar-generator/images/ar.png" />
+    <meta name="twitter:url" content="https://web-ar-viewer.firebaseapp.com/" />
+    <title>WebARビューアー</title>
+    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+
+    <style>
+        .error {
+            padding: 20px;
+            color: #555555;
+            z-index: -5;
+            position: absolute;
+            animation: fadeIn 1s 5s forwards;
+            -webkit-animation: fadeIn 1s 5s forwards;
+        }
+
+        @keyframes fadeIn {
+            0% {opacity: 0}
+            100% {opacity: 1}
+        }
+        @-webkit-keyframes fadeIn {
+            0% {opacity: 0}
+            100% {opacity: 1}
+        }
+    </style>
+</head>
+
+<body>
+    <div class="error" style="opacity: 0;">
+        <h3>カメラの使用を許可してください。</h3>
+        もしくは、対応端末かどうかご確認お願いします。
+        <ul>
+            <li>
+                iOS 11 以上の iPhone/iPad Safari<br>
+                ※ iPhone 6S 以降の iPhone、または iPad(第5世代) 以降の iPad 及び iPad Pro
+            </li>
+            <li>Android Chromeブラウザ</li>
+            <li>Webカメラ付きPC</li>
+        </ul>
+        詳しくは<a href="https://web-ar-generator.firebaseapp.com/">ジェネレータページ</a>で。
+    </div>
+    <a-scene embedded arjs="debugUIEnabled: false; sourceType: webcam;" vr-mode-ui="enabled: false">
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script src="https://yoridrill.github.io/web-ar-viewer/js/index-min.js"></script>
+</body>
+
+</html>

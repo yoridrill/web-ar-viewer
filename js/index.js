@@ -184,7 +184,7 @@ try {
                 rotateAnim.setAttribute('to', (val.isWarp ? 0 : -90) + ' 360 0');
                 rotateAnim.setAttribute('dur', '20000');
                 rotateAnim.setAttribute('easing', 'linear');
-                rotateAnim.setAttribute('direction', 'reverse');
+                rotateAnim.setAttribute('fill', 'backwards');
                 rotateAnim.setAttribute('repeat', 'indefinite');
                 arData[idx].main.appendChild(rotateAnim);
             }

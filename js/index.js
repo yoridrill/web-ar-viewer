@@ -35,20 +35,25 @@ try {
         wrap.setAttribute('rotation', '25 0 0');
     } else if (arg.gyro) {
         var wrap = document.createElement('a-entity');
-        wrap.setAttribute('rotation', '0 -180 0');
-        wrap.setAttribute('position', '0 -3 3');
+        if (ratio < 0.7) {
+            wrap.setAttribute('rotation', '0 -180 0');
+            wrap.setAttribute('position', '0 -3 3');
+
+            var light = document.createElement('a-entity');
+            light.setAttribute('light', 'type: directional; color: #FFF; intensity: 0.2');
+            light.setAttribute('position', '4 4 -10');
+            scene.appendChild(light);
+
+            var amb = document.createElement('a-entity');
+            amb.setAttribute('light', 'type: ambient; color: #BBB');
+            scene.appendChild(amb);
+        } else {
+            wrap.setAttribute('rotation', '25 0 0');
+            wrap.setAttribute('position', '0 -1 -10');
+        }
         var camera = document.querySelector('a-entity');
         camera.setAttribute('look-controls', 'look-controls');
         camera.setAttribute('position', '0 0 0');
-
-        var light = document.createElement('a-entity');
-        light.setAttribute('light', 'type: directional; color: #FFF; intensity: 0.2');
-        light.setAttribute('position', '4 4 -10');
-        scene.appendChild(light);
-
-        var amb = document.createElement('a-entity');
-        amb.setAttribute('light', 'type: ambient; color: #BBB');
-        scene.appendChild(amb);
     } else {
         var wrap = document.createElement('a-marker');
         wrap.setAttribute('preset', 'custom');

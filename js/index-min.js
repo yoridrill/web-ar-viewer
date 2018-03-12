@@ -8684,7 +8684,7 @@ AFRAME.registerSystem('arjs', {
 		// copy projection matrix to camera
 		this._arSession.onResize()
 	},
-})
+});
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};

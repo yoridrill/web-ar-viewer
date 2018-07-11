@@ -11,9 +11,23 @@
     <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
 
     <style>
+        .toGen {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: x-small;
+            font-family: sans-serif;
+            text-shadow: 0.5px 0.5px 0 #fff, -0.5px 0.5px 0 #fff, 0.5px -0.5px 0 #fff, -0.5px -0.5px 0 #fff;
+            z-index: 1;
+        }
+        a {
+            text-decoration: none;
+            color: #666;
+            font-weight: bold;
+        }
         .error {
             padding: 20px;
-            color: #555555;
+            color: #555;
             z-index: -5;
             position: absolute;
             animation: fadeIn 1s 5s forwards;
@@ -32,6 +46,7 @@
 </head>
 
 <body>
+    <div class="toGen"><a href="https://web-ar-generator.firebaseapp.com/">＜ GENERATOR</a></div>
     <div class="error" style="opacity: 0;">
         <h3>カメラの使用を許可してください。</h3>
         もしくは、対応端末かどうかご確認お願いします。
@@ -43,7 +58,6 @@
             <li>Android Chromeブラウザ</li>
             <li>Webカメラ付きPC</li>
         </ul>
-        詳しくは<a href="https://web-ar-generator.firebaseapp.com/">ジェネレータページ</a>で。
     </div>
     <a-scene embedded arjs="debugUIEnabled: false; sourceType: webcam;" vr-mode-ui="enabled: false">
         <a-entity camera></a-entity>

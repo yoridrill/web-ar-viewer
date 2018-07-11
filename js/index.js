@@ -2,7 +2,6 @@ try {
     var C = {
         arNum: 4
     };
-    var ratio = (window.innerWidth*2)/(window.innerHeight*3);
 
     var arg = {};
     var pair = location.search.substring(1).split('&');
@@ -31,29 +30,16 @@ try {
 
     if (arg.preview) {
         var wrap = document.createElement('a-entity');
-        wrap.setAttribute('position', '0 0 -' + 15*ratio);
+        wrap.setAttribute('position', '0 0 -15');
         wrap.setAttribute('rotation', '25 0 0');
     } else if (arg.gyro) {
         var wrap = document.createElement('a-entity');
-        if (ratio < 0.7) {
-            wrap.setAttribute('rotation', '0 -180 0');
-            wrap.setAttribute('position', '0 -3 3');
+        wrap.setAttribute('rotation', '0 0 0');
+        wrap.setAttribute('position', '0 0 0');
 
-            var light = document.createElement('a-entity');
-            light.setAttribute('light', 'type: directional; color: #FFF; intensity: 0.2');
-            light.setAttribute('position', '4 4 -10');
-            scene.appendChild(light);
-
-            var amb = document.createElement('a-entity');
-            amb.setAttribute('light', 'type: ambient; color: #BBB');
-            scene.appendChild(amb);
-        } else {
-            wrap.setAttribute('rotation', '25 0 0');
-            wrap.setAttribute('position', '0 -1 -10');
-        }
         var camera = document.querySelector('a-entity');
         camera.setAttribute('look-controls', 'look-controls');
-        camera.setAttribute('position', '0 0 0');
+        camera.setAttribute('position', '0 4 15');
     } else {
         var wrap = document.createElement('a-marker');
         wrap.setAttribute('preset', 'custom');
@@ -67,7 +53,7 @@ try {
         arData[idx].isWarp = arg.warpList && !!Number(arg.warpList[idx]);
         arData[idx].isShadow = arg.shodowList && !!Number(arg.shodowList[idx]);
         arData[idx].isPoyo = arg.poyoList && !!Number(arg.poyoList[idx]);
-        arData[idx].size = arg.sizeList ? {w: Number(arg.sizeList[idx][0]), h: Number(arg.sizeList[idx][1])*ratio} : {w: 2, h: 2*ratio};
+        arData[idx].size = arg.sizeList ? {w: Number(arg.sizeList[idx][0])*0.8, h: Number(arg.sizeList[idx][1])} : {w: 2*0.8, h: 2};
 
         arData[idx].isGif = !!(arg['i' + idx]||'').match(/\.gif$/i);
 
@@ -158,7 +144,7 @@ try {
                 });
             } else {
                 AFRAME.utils.entity.setComponentProperty(arData[idx].main, 'geometry', {
-                    primitive: 'sphere', radius: h1_2 - 0.1, phiStart: -90
+                    primitive: 'sphere', radius: h1_2 - 0.25, phiStart: -90
                 });
             }
 

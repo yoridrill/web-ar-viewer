@@ -39,7 +39,7 @@ try {
 
         var camera = document.querySelector('a-entity');
         camera.setAttribute('look-controls', 'look-controls');
-        camera.setAttribute('position', '0 4 15');
+        camera.setAttribute('position', '0 4 10');
     } else {
         var wrap = document.createElement('a-marker');
         wrap.setAttribute('preset', 'custom');

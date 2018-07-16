@@ -34,12 +34,12 @@ try {
         wrap.setAttribute('rotation', '25 0 0');
     } else if (arg.gyro) {
         var wrap = document.createElement('a-entity');
-        wrap.setAttribute('rotation', '0 0 0');
-        wrap.setAttribute('position', '0 0 0');
+        wrap.setAttribute('rotation', '10 0 0');
+        wrap.setAttribute('position', '0 0 -8');
 
         var camera = document.querySelector('a-entity');
         camera.setAttribute('look-controls', 'look-controls');
-        camera.setAttribute('position', '0 4 6');
+        camera.setAttribute('position', '0 4 0');
     } else {
         var wrap = document.createElement('a-marker');
         wrap.setAttribute('preset', 'custom');

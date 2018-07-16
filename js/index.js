@@ -53,7 +53,7 @@ try {
         arData[idx].isWarp = arg.warpList && !!Number(arg.warpList[idx]);
         arData[idx].isShadow = arg.shodowList && !!Number(arg.shodowList[idx]);
         arData[idx].isPoyo = arg.poyoList && !!Number(arg.poyoList[idx]);
-        arData[idx].size = arg.sizeList ? {w: Number(arg.sizeList[idx][0])*0.8, h: Number(arg.sizeList[idx][1])} : {w: 2*0.8, h: 2};
+        arData[idx].size = arg.sizeList ? {w: Number(arg.sizeList[idx][0])*0.9, h: Number(arg.sizeList[idx][1])} : {w: 2*0.9, h: 2};
 
         arData[idx].isGif = !!(arg['i' + idx]||'').match(/\.gif$/i);
 

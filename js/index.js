@@ -3,6 +3,17 @@ try {
         arNum: 4
     };
 
+    var swMarker = document.getElementById('swMarker');
+    var swGyro = document.getElementById('swGyro');
+    var swPreview = document.getElementById('swPreview');
+    var swHelp = document.getElementById('swHelp');
+    var helpContent = document.getElementById('helpContent');
+
+    swHelp.addEventListener('click', function() {
+        helpContent.classList.toggle('hide');
+        swHelp.classList.toggle('current');
+    });
+
     var arg = {};
     var pair = location.search.substring(1).split('&');
     for(var i=0; pair[i]; i++) {
@@ -25,6 +36,22 @@ try {
         throw new Error('画像が取得できませんでした。');
     }
 
+    swMarker.addEventListener('click', function() {
+        if(!this.classList.contains('current')) {
+            location.href = location.search.replace('&gyro=1', '').replace('&preview=1', '');
+        }
+    });
+    swGyro.addEventListener('click', function() {
+        if(!this.classList.contains('current')) {
+            location.href = location.search.replace('&preview=1', '') + '&gyro=1';
+        }
+    });
+    swPreview.addEventListener('click', function() {
+        if(!this.classList.contains('current')) {
+            location.href = location.search.replace('&gyro=1', '') + '&preview=1';
+        }
+    });
+
     var scene = document.querySelector('a-scene');
     var assets = document.createElement('a-assets');
 
@@ -32,6 +59,8 @@ try {
         var wrap = document.createElement('a-entity');
         wrap.setAttribute('position', '0 0 -15');
         wrap.setAttribute('rotation', '25 0 0');
+
+        swPreview.classList.add('current');
     } else if (arg.gyro) {
         var wrap = document.createElement('a-entity');
         wrap.setAttribute('rotation', '10 0 0');
@@ -40,11 +69,15 @@ try {
         var camera = document.querySelector('a-entity');
         camera.setAttribute('look-controls', 'look-controls');
         camera.setAttribute('position', '0 4 0');
+
+        swGyro.classList.add('current');
     } else {
         var wrap = document.createElement('a-marker');
         wrap.setAttribute('preset', 'custom');
         wrap.setAttribute('type', 'pattern');
         wrap.setAttribute('url', 'asset/pattern-marker.patt');
+
+        swMarker.classList.add('current');
     }
 
     // データの準備・アセット読み込み

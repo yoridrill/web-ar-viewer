@@ -11,45 +11,79 @@
     <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
 
     <style>
-        .toGen {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            font-size: x-small;
+        body {
             font-family: sans-serif;
-            text-shadow: 0.5px 0.5px 0 #fff, -0.5px 0.5px 0 #fff, 0.5px -0.5px 0 #fff, -0.5px -0.5px 0 #fff;
-            z-index: 1;
         }
         a {
             text-decoration: none;
             color: #666;
             font-weight: bold;
         }
-        .error {
-            padding: 20px;
-            color: #555;
-            z-index: -5;
-            position: absolute;
-            animation: fadeIn 1s 5s forwards;
-            -webkit-animation: fadeIn 1s 5s forwards;
+        .toGen {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: x-small;
+            text-shadow: 0.5px 0.5px 0 #fff, -0.5px 0.5px 0 #fff, 0.5px -0.5px 0 #fff, -0.5px -0.5px 0 #fff;
+            z-index: 3;
         }
+        .switch {
+            position: fixed;
+            top: 0;
+            right: 10px;
+            background-color: #eee;
+            padding: 5px 8px;
+            border-radius: 0 0 10px 10px;
+            z-index: 2;
+        }
+        .swItem {
+            opacity: 0.3;
+            padding: 0 2px;
+        }
+        .swItem.current {
+            opacity: 0.7;
+        }
+        .swItem:hover {
+            opacity: 0.9;
+        }
+        #helpContent {
+            z-index: 1;
+            position: fixed;
+            top: 54px;
+            right: 10px;
+            background-color: #eee;
+            border-radius: 10px 0;
+            font-size: 11px;
+            padding: 0 20px;
+            margin-left: 10px;
+            pointer-events: none;
 
-        @keyframes fadeIn {
-            0% {opacity: 0}
-            100% {opacity: 1}
+            transition: opacity 0.3s, top 0.3s;
+            -webkit-transition: opacity 0.3s, top 0.3s;
         }
-        @-webkit-keyframes fadeIn {
-            0% {opacity: 0}
-            100% {opacity: 1}
+        #helpContent img {
+            vertical-align: -30%;
+        }
+        #helpContent.hide {
+            opacity: 0;
+            top: 44px;
         }
     </style>
 </head>
 
 <body>
     <div class="toGen"><a href="https://web-ar-generator.firebaseapp.com/">＜ GENERATOR</a></div>
-    <div class="error" style="opacity: 0;">
-        <h3>カメラの使用を許可してください。</h3>
-        もしくは、対応端末かどうかご確認お願いします。
+    <div class="switch">
+        <a id="swMarker" class="swItem"><img src="asset/marker.png" width="30"></a>
+        <a id="swGyro" class="swItem"><img src="asset/gyro.png" width="30"></a>
+        <a id="swPreview" class="swItem"><img src="asset/preview.png" width="30"></a>
+        <a id="swHelp" class="swItem"><img src="asset/help.png" width="30"></a>
+    </div>
+    <div id="helpContent" class="hide">
+        <p><img src="asset/marker.png" width="20"> マーカー画像をカメラで映すことでAR表示</p>
+        <p><img src="asset/gyro.png" width="20"> スマホのジャイロセンサーでAR表示</p>
+        <p><img src="asset/preview.png" width="20"> 中央固定表示</p>
+        <h4>対応端末</h4>
         <ul>
             <li>
                 iOS 11 以上の iPhone/iPad Safari<br>

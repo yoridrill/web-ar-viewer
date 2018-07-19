@@ -9,6 +9,7 @@
     <meta name="twitter:url" content="https://web-ar-viewer.firebaseapp.com/" />
     <title>WebARビューアー</title>
     <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+    <script src="https://yoridrill.github.io/web-ar-viewer/js/lib-min.js"></script>
 
     <style>
         body {
@@ -93,10 +94,10 @@
             <li>Webカメラ付きPC</li>
         </ul>
     </div>
-    <a-scene embedded arjs="debugUIEnabled: false; sourceType: webcam;" vr-mode-ui="enabled: false">
-        <a-entity camera></a-entity>
+    <a-scene embedded arjs="debugUIEnabled: false; sourceType: webcam;">
+        <a-camera-static/>
     </a-scene>
-
+    <canvas id="leftlens" style="position: absolute; top: 0px; left: 0; z-index: -3;"></canvas>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/index-min.js"></script>
 </body>
 

@@ -25,6 +25,7 @@ try {
     arg.warpList = arg.fw && (pad + parseInt(arg.fw, 16).toString(2)).slice(-1 * C.arNum).split('').reverse();
     arg.shodowList = arg.fs && (pad + parseInt(arg.fs, 16).toString(2)).slice(-1 * C.arNum).split('').reverse();
     arg.poyoList = arg.fp && (pad + parseInt(arg.fp, 16).toString(2)).slice(-1 * C.arNum).split('').reverse();
+    arg.decaList = arg.fd && (pad + parseInt(arg.fd, 16).toString(2)).slice(-1 * C.arNum).split('').reverse();
 
     arg.sizeList = arg.wh && (pad + pad + parseInt(arg.wh, 16).toString(10)).slice(-2 * C.arNum).match(/.{2}/g).reverse();
 
@@ -55,6 +56,31 @@ try {
     var scene = document.querySelector('a-scene');
     var assets = document.createElement('a-assets');
 
+
+    scene.addEventListener('click', function(e) {
+        if(e.target.className === 'a-enter-vr-button') {
+            var videoDom = document.querySelector('video');
+            videoDom.style.left = '50%';
+
+            var cEle = document.getElementById('leftlens');
+            var cCtx = cEle.getContext('2d');
+
+
+
+              // canvasに関数実行時の動画のフレームを描画
+            // clone.style.right = '50%';
+            // clone.style.left = 'auto';
+            // document.body.appendChild(clone);
+            function onNotify(){
+                cEle.width  = videoDom.videoWidth;   // canvasの幅と高さを、動画の幅と高さに合わせる
+                cEle.height = videoDom.videoHeight;
+                cEle.style.marginTop = videoDom.style.marginTop;
+                cCtx.drawImage(videoDom, 0, 0);
+            };
+            var interval_id = setInterval(onNotify,1000 / 60);
+        }
+    });
+
     if (arg.preview) {
         var wrap = document.createElement('a-entity');
         wrap.setAttribute('position', '0 0 -15');
@@ -63,12 +89,10 @@ try {
         swPreview.classList.add('current');
     } else if (arg.gyro) {
         var wrap = document.createElement('a-entity');
-        wrap.setAttribute('rotation', '10 0 0');
-        wrap.setAttribute('position', '0 0 -8');
+        wrap.setAttribute('position', '0 -5 -8');
 
-        var camera = document.querySelector('a-entity');
+        var camera = document.querySelector('a-camera-static');
         camera.setAttribute('look-controls', 'look-controls');
-        camera.setAttribute('position', '0 4 0');
 
         swGyro.classList.add('current');
     } else {
@@ -86,7 +110,21 @@ try {
         arData[idx].isWarp = arg.warpList && !!Number(arg.warpList[idx]);
         arData[idx].isShadow = arg.shodowList && !!Number(arg.shodowList[idx]);
         arData[idx].isPoyo = arg.poyoList && !!Number(arg.poyoList[idx]);
-        arData[idx].size = arg.sizeList ? {w: Number(arg.sizeList[idx][0])*0.9, h: Number(arg.sizeList[idx][1])} : {w: 2*0.9, h: 2};
+        arData[idx].isDeca = arg.decaList && !!Number(arg.decaList[idx]);
+        arData[idx].size = arg.sizeList ? {
+            w: Number(arg.sizeList[idx][0])*0.9,
+            h: Number(arg.sizeList[idx][1])
+        } : {
+            w: 2*0.9,
+            h: 2
+        };
+
+        if (arData[idx].isDeca) {
+            arData[idx].size = {
+                w: arData[idx].size.w * 10,
+                h: arData[idx].size.h * 10
+            }
+        }
 
         arData[idx].isGif = !!(arg['i' + idx]||'').match(/\.gif$/i);
 

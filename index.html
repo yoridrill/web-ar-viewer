@@ -8,8 +8,10 @@
     <meta name="twitter:image" content="https://yoridrill.github.io/web-ar-generator/images/ar.png" />
     <meta name="twitter:url" content="https://web-ar-viewer.firebaseapp.com/" />
     <title>WebARビューアー</title>
-    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
-    <script src="https://yoridrill.github.io/web-ar-viewer/js/lib-min.js"></script>
+    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-animation-component@^5.0.0/dist/aframe-animation-component.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.6.0/aframe/build/aframe-ar.js"></script>
+    <script src="https://yoridrill.github.io/web-ar-viewer/js/gif-shader-min.js"></script>
 
     <style>
         body {
@@ -21,18 +23,20 @@
             font-weight: bold;
         }
         .toGen {
+            display: block;
             position: fixed;
-            top: 20px;
-            left: 20px;
+            top: 0;
+            left: 0;
+            padding: 15px;
             font-size: x-small;
-            text-shadow: 0.5px 0.5px 0 #fff, -0.5px 0.5px 0 #fff, 0.5px -0.5px 0 #fff, -0.5px -0.5px 0 #fff;
+            text-shadow: 1px 1px 1px #fff, -1px 1px 1px #fff, 1px -1px 1px #fff, -1px -1px 1px #fff;
             z-index: 3;
         }
         .switch {
             position: fixed;
             top: 0;
             right: 10px;
-            background-color: #eee;
+            background-color: rgba(235,235,235,0.8);
             padding: 5px 8px;
             border-radius: 0 0 10px 10px;
             z-index: 2;
@@ -52,7 +56,7 @@
             position: fixed;
             top: 54px;
             right: 10px;
-            background-color: #eee;
+            background-color: rgba(240,240,240,0.95);
             border-radius: 10px 0;
             font-size: 11px;
             padding: 0 20px;
@@ -69,11 +73,18 @@
             opacity: 0;
             top: 44px;
         }
+        .vrIcon {
+            display: inline-block;
+            vertical-align: -30%;
+            width: 20px;
+            height: 20px;
+            background: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20245.82%20141.73%22%3E%3Cdefs%3E%3Cstyle%3E.a%7Bfill%3A%23fff%3Bfill-rule%3Aevenodd%3B%7D%3C%2Fstyle%3E%3C%2Fdefs%3E%3Ctitle%3Emask%3C%2Ftitle%3E%3Cpath%20class%3D%22a%22%20d%3D%22M175.56%2C111.37c-22.52%2C0-40.77-18.84-40.77-42.07S153%2C27.24%2C175.56%2C27.24s40.77%2C18.84%2C40.77%2C42.07S198.08%2C111.37%2C175.56%2C111.37ZM26.84%2C69.31c0-23.23%2C18.25-42.07%2C40.77-42.07s40.77%2C18.84%2C40.77%2C42.07-18.26%2C42.07-40.77%2C42.07S26.84%2C92.54%2C26.84%2C69.31ZM27.27%2C0C11.54%2C0%2C0%2C12.34%2C0%2C28.58V110.9c0%2C16.24%2C11.54%2C30.83%2C27.27%2C30.83H99.57c2.17%2C0%2C4.19-1.83%2C5.4-3.7L116.47%2C118a8%2C8%2C0%2C0%2C1%2C12.52-.18l11.51%2C20.34c1.2%2C1.86%2C3.22%2C3.61%2C5.39%2C3.61h72.29c15.74%2C0%2C27.63-14.6%2C27.63-30.83V28.58C245.82%2C12.34%2C233.93%2C0%2C218.19%2C0H27.27Z%22%2F%3E%3C%2Fsvg%3E) 50% 50%/70% 70% no-repeat rgba(0,0,0,.7);
+        }
     </style>
 </head>
 
 <body>
-    <div class="toGen"><a href="https://web-ar-generator.firebaseapp.com/">＜ GENERATOR</a></div>
+    <a class="toGen" href="https://web-ar-generator.firebaseapp.com/">＜ GENERATOR</a>
     <div class="switch">
         <a id="swMarker" class="swItem"><img src="asset/marker.png" width="30"></a>
         <a id="swGyro" class="swItem"><img src="asset/gyro.png" width="30"></a>
@@ -83,7 +94,11 @@
     <div id="helpContent" class="hide">
         <p><img src="asset/marker.png" width="20"> マーカー画像をカメラで映すことでAR表示</p>
         <p><img src="asset/gyro.png" width="20"> スマホのジャイロセンサーでAR表示</p>
-        <p><img src="asset/preview.png" width="20"> 中央固定表示</p>
+        <p><img src="asset/preview.png" width="20"> 中央固定表示（上下スワイプでズーム）</p>
+        <p>
+            <div class="vrIcon"></div>
+            簡易VR表示（※長時間の視聴は避けてください。）
+        </p>
         <h4>対応端末</h4>
         <ul>
             <li>
@@ -97,7 +112,7 @@
     <a-scene embedded arjs="debugUIEnabled: false; sourceType: webcam;">
         <a-camera-static/>
     </a-scene>
-    <canvas id="leftlens" style="position: absolute; top: 0px; left: 0; z-index: -3;"></canvas>
+    <canvas id="rightlens" style="position: absolute; top: 0px; left: 50%; z-index: -5;"></canvas>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/index-min.js"></script>
 </body>
 

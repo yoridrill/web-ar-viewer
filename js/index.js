@@ -197,8 +197,8 @@ var webArViewer = webArViewer || {};
                         var pos = [
                             {x: 0, y: 0, z: 0},
                             {x: 0, y: -0.2, z: - self.arData[0].size.h/2 - h1_2},
-                            {x: 0, y: -0.1, z: - h1_2},
-                            {x: 0, y: 0, z: self.arData[0].size.h/2 - h1_2}
+                            {x: 0, y: 0.1, z: - h1_2},
+                            {x: 0, y: -0.1, z: self.arData[0].size.h/2 - h1_2}
                         ];
                         shadow.setAttribute('position', AFRAME.utils.coordinates.stringify(pos[idx]));
                         shadow.setAttribute('rotation', '-90 0 0');
@@ -221,16 +221,16 @@ var webArViewer = webArViewer || {};
                                 property: 'scale', dir: 'alternate', dur: 400, easing: 'easeInOutQuart', loop: true, to: '0.8 0.7 1'
                             });
                         }
-                        self.wrap.appendChild(shadow);
+                        self.arData[idx].shadow = shadow;
                     }
 
                     var main = document.createElement('a-entity');
 
                     var pos = [
                         {x: 0, y: val.isWarp ? h1_2 : -0.2, z: 0},
-                        {x: 0, y: h1_2, z: (val.isWarp ? val.size.w : 0) - self.arData[0].size.h/2},
+                        {x: 0, y: h1_2, z: (val.isWarp ? val.size.w : 0) - self.arData[0].size.h/2 - 0.1},
                         {x: 0, y: h1_2, z: - (val.isWarp ? val.size.w : 0)},
-                        {x: 0, y: h1_2, z: self.arData[0].size.h/2 - (val.isWarp ? val.size.w : 0)}
+                        {x: 0, y: h1_2, z: self.arData[0].size.h/2 - (val.isWarp ? val.size.w : 0) + 0.2}
                     ];
 
                     main.setAttribute('position', AFRAME.utils.coordinates.stringify(pos[idx]));
@@ -248,12 +248,12 @@ var webArViewer = webArViewer || {};
                     } else if (idx) {
                         var ts = [0, 212, -32, -32];
                         AFRAME.utils.entity.setComponentProperty(main, 'geometry', {
-                            primitive: 'cylinder', openEnded: true, thetaStart: ts[idx], thetaLength: idx===1 ? -64 : 64,
+                            primitive: 'cylinder', openEnded: true, thetaStart: ts[idx], thetaLength: idx === 1 ? -64 : 64,
                             height: val.size.h, radius: val.size.w
                         });
                     } else {
                         AFRAME.utils.entity.setComponentProperty(main, 'geometry', {
-                            primitive: 'sphere', radius: h1_2 - 0.25, phiStart: -90
+                            primitive: 'sphere', radius: h1_2, phiStart: -90
                         });
                     }
 
@@ -273,15 +273,30 @@ var webArViewer = webArViewer || {};
                             property: 'rotation', dur: 20000, easing: 'linear', loop: true, to: (val.isWarp ? 0 : -90) + ' 360 0'
                         });
                     }
-
                     self.arData[idx].main = main;
                 }
             });
 
-            self.arData[1].main && self.wrap.appendChild(self.arData[1].main);
-            self.arData[2].main && self.wrap.appendChild(self.arData[2].main);
-            self.arData[3].main && self.wrap.appendChild(self.arData[3].main);
-            self.arData[0].main && self.wrap.appendChild(self.arData[0].main);
+            if(self.arData[0].isWarp) {
+                self.arData[1].shadow && self.wrap.appendChild(self.arData[1].shadow);
+                self.arData[2].shadow && self.wrap.appendChild(self.arData[2].shadow);
+                self.arData[3].shadow && self.wrap.appendChild(self.arData[3].shadow);
+
+                self.arData[1].main && self.wrap.appendChild(self.arData[1].main);
+                self.arData[2].main && self.wrap.appendChild(self.arData[2].main);
+                self.arData[0].main && self.wrap.appendChild(self.arData[0].main);
+                self.arData[3].main && self.wrap.appendChild(self.arData[3].main);
+            } else {
+                self.arData[0].main && self.wrap.appendChild(self.arData[0].main);
+
+                self.arData[1].shadow && self.wrap.appendChild(self.arData[1].shadow);
+                self.arData[2].shadow && self.wrap.appendChild(self.arData[2].shadow);
+                self.arData[3].shadow && self.wrap.appendChild(self.arData[3].shadow);
+
+                self.arData[1].main && self.wrap.appendChild(self.arData[1].main);
+                self.arData[2].main && self.wrap.appendChild(self.arData[2].main);
+                self.arData[3].main && self.wrap.appendChild(self.arData[3].main);
+            }
             webArViewer.scene.appendChild(self.wrap);
         }
     };

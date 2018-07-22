@@ -196,9 +196,9 @@ var webArViewer = webArViewer || {};
 
                         var pos = [
                             {x: 0, y: 0, z: 0},
-                            {x: 0, y: 0, z: - self.arData[0].size.h/2 - h1_2},
+                            {x: 0, y: -0.2, z: - self.arData[0].size.h/2 - h1_2},
                             {x: 0, y: -0.1, z: - h1_2},
-                            {x: 0, y: -0.2, z: self.arData[0].size.h/2 - h1_2}
+                            {x: 0, y: 0, z: self.arData[0].size.h/2 - h1_2}
                         ];
                         shadow.setAttribute('position', AFRAME.utils.coordinates.stringify(pos[idx]));
                         shadow.setAttribute('rotation', '-90 0 0');

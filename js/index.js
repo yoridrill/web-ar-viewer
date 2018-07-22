@@ -196,9 +196,9 @@ var webArViewer = webArViewer || {};
 
                         var pos = [
                             {x: 0, y: 0, z: 0},
-                            {x: 0, y: -0.2, z: - self.arData[0].size.h/2 - h1_2},
+                            {x: 0, y: 0, z: - self.arData[0].size.h/2 - h1_2},
                             {x: 0, y: -0.1, z: - h1_2},
-                            {x: 0, y: 0, z: self.arData[0].size.h/2 - h1_2}
+                            {x: 0, y: -0.2, z: self.arData[0].size.h/2 - h1_2}
                         ];
                         shadow.setAttribute('position', AFRAME.utils.coordinates.stringify(pos[idx]));
                         shadow.setAttribute('rotation', '-90 0 0');
@@ -227,7 +227,7 @@ var webArViewer = webArViewer || {};
                     var main = document.createElement('a-entity');
 
                     var pos = [
-                        {x: 0, y: val.isWarp ? h1_2 : 0, z: 0},
+                        {x: 0, y: val.isWarp ? h1_2 : -0.2, z: 0},
                         {x: 0, y: h1_2, z: (val.isWarp ? val.size.w : 0) - self.arData[0].size.h/2},
                         {x: 0, y: h1_2, z: - (val.isWarp ? val.size.w : 0)},
                         {x: 0, y: h1_2, z: self.arData[0].size.h/2 - (val.isWarp ? val.size.w : 0)}

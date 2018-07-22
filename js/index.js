@@ -267,7 +267,8 @@ var webArViewer = webArViewer || {};
                             property: 'scale', dir: 'alternate', dur: 400, easing: 'easeOutQuad', loop: true, to: '0.94 1.06 1'
                         });
 
-                    } else if (idx === 0 && val.isShadow) {
+                    }
+                    if (idx === 0 && val.isShadow) {
                         AFRAME.utils.entity.setComponentProperty(main, 'animation__rot', {
                             property: 'rotation', dur: 20000, easing: 'linear', loop: true, to: (val.isWarp ? 0 : -90) + ' 360 0'
                         });

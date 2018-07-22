@@ -207,7 +207,7 @@ var webArViewer = webArViewer || {};
                             primitive: 'plane', height: val.size.h, width: val.size.w
                         });
                         AFRAME.utils.entity.setComponentProperty(shadow, 'material', {
-                            shader: val.isGif ? 'gif' : 'standard', npot: true, src: '#source' + idx,
+                            shader: val.isGif ? 'gif' : 'standard', npot: true, src: '#source' + idx, transparent: true, alphaTest: 0.1,
                             color: 'black', opacity: 0.3
                         });
 

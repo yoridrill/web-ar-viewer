@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
     <meta name="twitter:card" content="summary" />
-    <meta name="og:title" content="WebARビューア" />
-    <meta name="og:description" content="標準ブラウザから見ることで、ARが見られます。" />
-    <meta name="og:image" content="https://yoridrill.github.io/web-ar-viewer/asset/share.png" />
-    <title>WebARビューア</title>
+    <meta name="og:title" content="WebVRビューア" />
+    <meta name="twitter:url" content="https://web-ar-viewer.firebaseapp.com/vr/" />
+    <meta name="og:description" content="標準ブラウザから見ることで、VRが見られます。" />
+    <meta name="og:image" content="https://yoridrill.github.io/web-ar-viewer/asset/share_vr.png" />
+    <title>WebVRビューア</title>
     <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-animation-component@^5.0.0/dist/aframe-animation-component.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.6.0/aframe/build/aframe-ar.js"></script>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/gif-shader-min.js"></script>
 
     <style>
@@ -86,18 +86,12 @@
 <body>
     <a class="toGen" href="https://web-ar-generator.firebaseapp.com/">＜ GENERATOR</a>
     <div class="switch">
-        <a id="swMarker" class="swItem"><img src="asset/marker.png" width="30"></a>
-        <a id="swGyro" class="swItem"><img src="asset/gyro.png" width="30"></a>
-        <a id="swPreview" class="swItem"><img src="asset/preview.png" width="30"></a>
-        <a id="swHelp" class="swItem"><img src="asset/help.png" width="30"></a>
+        <a id="swHelp" class="swItem"><img src="../asset/help.png" width="30"></a>
     </div>
     <div id="helpContent" class="hide">
-        <p><img src="asset/marker.png" width="20"> マーカー画像をカメラで映すことでAR表示</p>
-        <p><img src="asset/gyro.png" width="20"> スマホのジャイロセンサーでAR表示</p>
-        <p><img src="asset/preview.png" width="20"> 中央固定表示（上下スワイプでズーム）</p>
         <p>
             <div class="vrIcon"></div>
-            簡易VR表示（※長時間の視聴は避けてください。）
+            VR表示
         </p>
         <h4>対応端末</h4>
         <ul>
@@ -106,13 +100,10 @@
                 ※ iPhone 6S 以降の iPhone、または iPad(第5世代) 以降の iPad 及び iPad Pro
             </li>
             <li>Android Chromeブラウザ</li>
-            <li>Webカメラ付きPC（Chrome/Firefox/Safari）</li>
+            <li>PC（Chrome/Firefox/Safari）</li>
         </ul>
     </div>
-    <a-scene embedded arjs="debugUIEnabled: false; sourceType: webcam;">
-        <a-camera-static/>
-    </a-scene>
-    <canvas id="rightlens" style="position: absolute; top: 0px; left: 50%; z-index: -5;"></canvas>
+    <a-scene></a-scene>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/index-min.js"></script>
 </body>
 

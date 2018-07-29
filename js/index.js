@@ -107,10 +107,8 @@ var webArViewer = webArViewer || {};
 
             if (self.arg.preview) {
                 swPreview.classList.add('current');
-                self.arg.multi = false;
             } else if (self.arg.gyro) {
                 swGyro.classList.add('current');
-                self.arg.multi = false;
             } else {
                 swMarker.classList.add('current');
             }
@@ -205,7 +203,7 @@ var webArViewer = webArViewer || {};
                 if (idx === 4) {
                     var sky = document.createElement('a-sky');
                     AFRAME.utils.entity.setComponentProperty(sky, 'material', {
-                        shader: val.isGif ? 'gif' : 'standard', src: '#source' + idx
+                        shader: val.isGif ? 'gif' : 'standard', src: '#source' + idx, radius: val.isWarp ? 80 : 5000
                     });
                     if (val.isShadow) {
                         AFRAME.utils.entity.setComponentProperty(sky, 'animation__rot', {
@@ -213,6 +211,16 @@ var webArViewer = webArViewer || {};
                         });
                     }
                     webArViewer.scene.appendChild(sky);
+
+                    if (val.isPoyo) {
+                        var light1 = document.createElement('a-entity');
+                        var light2 = document.createElement('a-entity');
+                        light1.setAttribute('light', 'type: hemisphere; color: #33F; groundColor: #BB3; intensity: 2');
+                        light2.setAttribute('light', 'type: directional; color: #FF3; intensity: 0.6');
+                        light2.setAttribute('position', '-20 90 10');
+                        webArViewer.scene.appendChild(light1);
+                        webArViewer.scene.appendChild(light2);
+                    }
                     return;
                 }
 
@@ -301,16 +309,29 @@ var webArViewer = webArViewer || {};
                     if (!val.path || idx === 4) {
                         return;
                     }
-                    var arMarker = document.createElement('a-marker');
-                    arMarker.setAttribute('preset', 'custom');
-                    arMarker.setAttribute('type', 'pattern');
-                    arMarker.setAttribute('url', 'asset/ar' + idx + '.patt');
+                    if (self.arg.gyro || self.arg.preview) {
+                        var arObj = document.createElement('a-entity');
+                        arObj.setAttribute('position', ['0 0 0', '2 0 -2.1', '0 0 -2.3', '-2 0 -2.2'][idx]);
 
-                    self.arData[idx].shadow && arMarker.appendChild(self.arData[idx].shadow);
-                    self.arData[idx].main && arMarker.appendChild(self.arData[idx].main);
+                        self.arData[idx].shadow && arObj.appendChild(self.arData[idx].shadow);
+                        self.arData[idx].main && arObj.appendChild(self.arData[idx].main);
 
-                    webArViewer.scene.appendChild(arMarker);
+                        self.wrap.appendChild(arObj);
+                    } else {
+                        var arMarker = document.createElement('a-marker');
+                        arMarker.setAttribute('preset', 'custom');
+                        arMarker.setAttribute('type', 'pattern');
+                        arMarker.setAttribute('url', 'asset/ar' + idx + '.patt');
+
+                        self.arData[idx].shadow && arMarker.appendChild(self.arData[idx].shadow);
+                        self.arData[idx].main && arMarker.appendChild(self.arData[idx].main);
+
+                        webArViewer.scene.appendChild(arMarker);
+                    }
                 });
+                if (self.arg.gyro || self.arg.preview) {
+                    webArViewer.scene.appendChild(self.wrap);
+                }
             } else {
                 self.arData[0].main && !self.arData[0].isWarp && self.wrap.appendChild(self.arData[0].main);
 

@@ -360,28 +360,28 @@ var webArViewer = webArViewer || {};
                 } else {
                     var p = {};
                     p[1] = function () {
-                        return {x: 0, y: 0, z: - self.arData[0].size.h/2 - h1_2 - 0.02};
+                        return {x: 0, y: 0.02, z: - self.arData[0].size.h/2 - h1_2};
                     };
                     p[2] = function () {
-                        return {x: 0, y: 0.04, z: - h1_2 - 0.01};
+                        return {x: 0, y: 0.07, z: - h1_2 - 0.04};
                     };
                     p[3] = function () {
-                        return {x: 0, y: 0.08, z: self.arData[0].size.h/2 - h1_2};
+                        return {x: 0, y: 0.03, z: self.arData[0].size.h/2 - h1_2 - 0.03};
                     };
                     return p[idx]();
                 }
             } else {
                 if (idx === 0) {
-                    return {x: 0, y: isWarp ? width/2 : 0, z: 0};
+                    return {x: 0, y: isWarp ? width/2 : -0.03, z: 0};
                 } else if (self.arg.multi) {
                     return {x: 0, y: h1_2, z: - (isWarp ? width : 0)};
                 } else {
                     var p = {};
                     p[1] = function () {
-                        return {x: 0, y: h1_2 + 0.05, z: (isWarp ? width : 0) - self.arData[0].size.h/2 - 0.01};
+                        return {x: 0, y: h1_2 + 0.08, z: (isWarp ? width : 0) - self.arData[0].size.h/2 - 0.01};
                     };
                     p[2] = function () {
-                        return {x: 0, y: h1_2, z: - (isWarp ? width : 0)};
+                        return {x: 0, y: h1_2 + 0.04, z: - (isWarp ? width : 0)};
                     };
                     p[3] = function () {
                         return {x: 0, y: h1_2, z: - (isWarp ? width : 0) + self.arData[0].size.h/2 + 0.01};

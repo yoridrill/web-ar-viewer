@@ -360,10 +360,10 @@ var webArViewer = webArViewer || {};
                 } else {
                     var p = {};
                     p[1] = function () {
-                        return {x: 0, y: 0, z: - self.arData[0].size.h/2 - h1_2};
+                        return {x: 0, y: 0, z: - self.arData[0].size.h/2 - h1_2 - 0.02};
                     };
                     p[2] = function () {
-                        return {x: 0, y: 0.04, z: - h1_2};
+                        return {x: 0, y: 0.04, z: - h1_2 - 0.01};
                     };
                     p[3] = function () {
                         return {x: 0, y: 0.08, z: self.arData[0].size.h/2 - h1_2};

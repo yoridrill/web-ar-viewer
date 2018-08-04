@@ -258,7 +258,7 @@ var webArViewer = webArViewer || {};
                 main.setAttribute('rotation', ((idx === 0 && !val.isWarp) ? -90 : 0) + ' 0 0');
 
                 AFRAME.utils.entity.setComponentProperty(main, 'material', {
-                    shader: val.isGif ? 'gif' : 'standard', npot: true, src: '#source' + idx,
+                    shader: val.isGif ? 'gif' : (idx === 0 ? 'flat' : 'standard'), npot: true, src: '#source' + idx,
                     side: 'double', transparent: true, alphaTest: 0.1
                 });
 
@@ -356,35 +356,35 @@ var webArViewer = webArViewer || {};
 
             if (type === 'shadow') {
                 if (self.arg.multi) {
-                    return {x: 0, y: -0.1, z: - h1_2};
+                    return {x: 0, y: 0, z: - h1_2};
                 } else {
                     var p = {};
                     p[1] = function () {
-                        return {x: 0, y: -0.2, z: - self.arData[0].size.h/2 - h1_2};
+                        return {x: 0, y: 0, z: - self.arData[0].size.h/2 - h1_2};
                     };
                     p[2] = function () {
-                        return {x: 0, y: -0.1, z: - h1_2};
+                        return {x: 0, y: 0.04, z: - h1_2};
                     };
                     p[3] = function () {
-                        return {x: 0, y: 0, z: self.arData[0].size.h/2 - h1_2};
+                        return {x: 0, y: 0.08, z: self.arData[0].size.h/2 - h1_2};
                     };
                     return p[idx]();
                 }
             } else {
                 if (idx === 0) {
-                    return {x: 0, y: isWarp ? width/2 : -0.2, z: 0};
+                    return {x: 0, y: isWarp ? width/2 : 0, z: 0};
                 } else if (self.arg.multi) {
                     return {x: 0, y: h1_2, z: - (isWarp ? width : 0)};
                 } else {
                     var p = {};
                     p[1] = function () {
-                        return {x: 0, y: h1_2, z: (isWarp ? width : 0) - self.arData[0].size.h/2 - 0.1};
+                        return {x: 0, y: h1_2 + 0.05, z: (isWarp ? width : 0) - self.arData[0].size.h/2 - 0.01};
                     };
                     p[2] = function () {
                         return {x: 0, y: h1_2, z: - (isWarp ? width : 0)};
                     };
                     p[3] = function () {
-                        return {x: 0, y: h1_2, z: - (isWarp ? width : 0) + self.arData[0].size.h/2 + 0.1};
+                        return {x: 0, y: h1_2, z: - (isWarp ? width : 0) + self.arData[0].size.h/2 + 0.01};
                     };
                     return p[idx]();
                 }

@@ -320,9 +320,9 @@
 	          return;
 	        }
 	        /* parse data */
-	        (0, _gifsparser.parseGIF)(arr, function (times, cnt, frames) {
+	        (0, _gifsparser.parseGIF)(arr, function (times, cnt, frames, compactFlg) {
 	          /* store data */
-	          var newData = { status: 'success', src: src, times: times, cnt: cnt, frames: frames, timestamp: Date.now() };
+	          var newData = { status: 'success', src: src, times: times, cnt: cnt, frames: frames, compactFlg: compactFlg, timestamp: Date.now() };
 	          /* callbacks */
 	          if (srcData.callbacks) {
 	            srcData.callbacks.forEach(function (cb) {
@@ -512,8 +512,10 @@
 	   * @private
 	   */
 	  __draw: function __draw() {
-
-	     this.__clearCanvas(); this.__ctx.drawImage(this.__frames[this.__frameIdx], 0, 0, this.__width, this.__height); this.__texture.needsUpdate = true;
+		 if (!this.__compactFlg) {
+			 this.__clearCanvas();
+		 }
+	     this.__ctx.drawImage(this.__frames[this.__frameIdx], 0, 0, this.__width, this.__height); this.__texture.needsUpdate = true;
 	  },
 
 
@@ -534,6 +536,7 @@
 	    var times = _ref.times;
 	    var cnt = _ref.cnt;
 	    var frames = _ref.frames;
+		var compactFlg = _ref.compactFlg;
 
 	    log('__ready');
 	    this.__textureSrc = src;
@@ -541,6 +544,7 @@
 	    cnt ? this.__loopCnt = cnt : this.__infinity = true;
 	    this.__frames = frames;
 	    this.__frameCnt = times.length;
+		this.__compactFlg = compactFlg;
 	    this.__startTime = Date.now();
 	    this.__width = THREE.Math.floorPowerOfTwo(frames[0].width);
 	    this.__height = THREE.Math.floorPowerOfTwo(frames[0].height);
@@ -574,6 +578,7 @@
 	    this.__infinity = false;
 	    this.__loopCnt = 0;
 	    this.__frames = null;
+		this.__compactFlg = false;
 	    this.__textureSrc = null;
 	  }
 	});
@@ -599,9 +604,10 @@
 	  var graphicControl = null;
 	  var imageData = null;
 	  var frames = [];
+	  var compactFlg = false;
 	  var loopCnt = 0;
 	  if (gif[0] === 0x47 && gif[1] === 0x49 && gif[2] === 0x46 && // 'GIF'
-	  gif[3] === 0x38 && gif[4] === 0x39 && gif[5] === 0x61) {
+	  gif[3] === 0x38 && (gif[4] === 0x39 || gif[4] === 0x37) && gif[5] === 0x61) {
 	    // '89a'
 	    pos += 13 + +!!(gif[10] & 0x80) * Math.pow(2, (gif[10] & 0x07) + 1) * 3;
 	    var gifHeader = gif.subarray(0, pos);
@@ -620,6 +626,7 @@
 	          errorCB && errorCB('parseGIF: unknown label');break;
 	        }
 	      } else if (blockId === 0x2c) {
+			compactFlg = !!(gif[pos + 1] + gif[pos + 2] + gif[pos + 3] + gif[pos + 4]);
 	        pos += 9;
 	        pos += 1 + +!!(gif[pos] & 0x80) * (Math.pow(2, (gif[pos] & 0x07) + 1) * 3);
 	        while (gif[++pos]) {
@@ -662,7 +669,7 @@
 	        frames[i] = this;
 	        if (loadCnt === frames.length) {
 	          cnv = null;
-	          successCB && successCB(delayTimes, loopCnt, frames);
+	          successCB && successCB(delayTimes, loopCnt, frames, compactFlg);
 	        } else {
 	          imageFix(++i);
 	        }

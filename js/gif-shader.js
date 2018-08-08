@@ -551,7 +551,7 @@
 	    this.__cnv.width = this.__width;
 	    this.__cnv.height = this.__height;
 	    this.__draw();
-	    if (this.__autoplay) {
+	    if (this.__autoplay && this.__frames.length > 1) {
 	      this.play();
 	    } else {
 	      this.pause();
@@ -621,12 +621,15 @@
 	          label === 0xff && (loopCnt = gif[pos + 15] + (gif[pos + 16] << 8));
 	          while (gif[++pos]) {
 	            pos += gif[pos];
-	          }label === 0xf9 && (graphicControl = gif.subarray(offset, pos + 1));
+	          }
+			  if(label === 0xf9) {
+				  graphicControl = gif.subarray(offset, pos + 1);
+				  compactFlg = !!gif[pos + 2];
+			  }
 	        } else {
 	          errorCB && errorCB('parseGIF: unknown label');break;
 	        }
 	      } else if (blockId === 0x2c) {
-			compactFlg = !!(gif[pos + 1] + gif[pos + 2] + gif[pos + 3] + gif[pos + 4]);
 	        pos += 9;
 	        pos += 1 + +!!(gif[pos] & 0x80) * (Math.pow(2, (gif[pos] & 0x07) + 1) * 3);
 	        while (gif[++pos]) {

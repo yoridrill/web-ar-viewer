@@ -87,6 +87,8 @@
 	    /* For material */
 	    color: { type: 'color' },
 	    fog: { default: true },
+		metalness: { default: 0 },
+		roughness: { default: 0.5 },
 
 	    /* For texuture */
 	    src: { default: null },
@@ -108,7 +110,7 @@
 	    this.__texture = new THREE.Texture(this.__cnv); //renders straight from a canvas
 	    this.__material = {};
 	    this.__reset();
-	    this.material = new THREE.MeshBasicMaterial({ map: this.__texture });
+	    this.material = new THREE.MeshStandardMaterial({ map: this.__texture });
 	    this.el.sceneEl.addBehavior(this);
 	    this.__addPublicFunctions();
 	    return this.material;
@@ -165,7 +167,9 @@
 	  __getMaterialData: function __getMaterialData(data) {
 	    return {
 	      fog: data.fog,
-	      color: new THREE.Color(data.color)
+	      color: new THREE.Color(data.color),
+		  metalness: data.metalness,
+  		  roughness: data.roughness
 	    };
 	  },
 

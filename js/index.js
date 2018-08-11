@@ -54,27 +54,6 @@ var webArViewer = webArViewer || {};
 
             // データの準備
             arData.forEach(function(val, idx) {
-                arData[idx] = { path: self.arg['i' + idx] };
-                arData[idx].isWarp = self.arg.warpList && !!Number(self.arg.warpList[idx]);
-                arData[idx].isShadow = self.arg.shodowList && !!Number(self.arg.shodowList[idx]);
-                arData[idx].isPoyo = self.arg.poyoList && !!Number(self.arg.poyoList[idx]);
-                arData[idx].isKira = self.arg.kiraList && !!Number(self.arg.kiraList[idx]);
-                arData[idx].isDeca = self.arg.decaList && !!Number(self.arg.decaList[idx]);
-                arData[idx].size = self.arg.sizeList ? {
-                    w: Number(self.arg.sizeList[idx][0])*0.9,
-                    h: Number(self.arg.sizeList[idx][1])
-                } : {
-                    w: 2*0.9,
-                    h: 2
-                };
-                if (arData[idx].isDeca) {
-                    arData[idx].size = {
-                        w: arData[idx].size.w * 10,
-                        h: arData[idx].size.h * 10
-                    };
-                }
-                arData[idx].isGif = !!(self.arg['i' + idx]||'').match(/\.gif$/i);
-
                 // アセット読み込み
                 if (self.arg['i' + idx]) {
                     var source = document.createElement('img');
@@ -82,7 +61,38 @@ var webArViewer = webArViewer || {};
                     source.setAttribute('id', 'source' + idx);
                     source.setAttribute('src', self.arg['i' + idx]);
                     assets.appendChild(source);
+
+                    if (self.arg['m' + idx]) {
+                        var map = document.createElement('img');
+                        map.setAttribute('crossorigin', 'anonymous');
+                        map.setAttribute('id', 'map' + idx);
+                        map.setAttribute('src', self.arg['m' + idx]);
+                        assets.appendChild(map);
+                    }
                 }
+                var dataObj = { path: self.arg['i' + idx] };
+                dataObj.map = self.arg['m' + idx];
+                dataObj.isWarp = self.arg.warpList && !!Number(self.arg.warpList[idx]);
+                dataObj.isShadow = self.arg.shodowList && !!Number(self.arg.shodowList[idx]);
+                dataObj.isPoyo = self.arg.poyoList && !!Number(self.arg.poyoList[idx]);
+                dataObj.isKira = self.arg.kiraList && !!Number(self.arg.kiraList[idx]);
+                dataObj.isDeca = self.arg.decaList && !!Number(self.arg.decaList[idx]);
+                dataObj.size = self.arg.sizeList ? {
+                    w: Number(self.arg.sizeList[idx][0])*0.9,
+                    h: Number(self.arg.sizeList[idx][1])
+                } : {
+                    w: 2*0.9,
+                    h: 2
+                };
+                if (dataObj.isDeca) {
+                    dataObj.size = {
+                        w: dataObj.size.w * 10,
+                        h: dataObj.size.h * 10
+                    };
+                }
+                dataObj.isGif = !!(self.arg['i' + idx]||'').match(/\.gif$/i);
+
+                arData[idx] = dataObj;
             });
 
             webArViewer.scene.appendChild(assets);
@@ -260,13 +270,13 @@ var webArViewer = webArViewer || {};
                 main.setAttribute('rotation', ((idx === 0 && !val.isWarp) ? -90 : 0) + ' 0 0');
 
                 AFRAME.utils.entity.setComponentProperty(main, 'material', {
-                    shader: val.isGif ? 'gif' : 'standard', npot: true, src: '#source' + idx,
+                    shader: val.isGif ? 'gif' : 'standard', npot: true, src: '#source' + idx, displacementMap: val.map ? '#map' + idx : null, displacementBias: -0.5,
                     side: 'double', transparent: true, alphaTest: 0.1, metalness: val.isKira ? 0.1 : 0, roughness: val.isKira ? 0.3 : 0.5
                 });
 
                 if (!val.isWarp) {
                     AFRAME.utils.entity.setComponentProperty(main, 'geometry', {
-                        primitive: 'plane', height: val.size.h, width: val.size.w
+                        primitive: 'plane', height: val.size.h, width: val.size.w, segmentsHeight: val.map ? 180 : 1, segmentsWidth: val.map ? 180 : 1
                     });
                 } else if (idx) {
                     var ts, tl;
@@ -279,11 +289,11 @@ var webArViewer = webArViewer || {};
                     }
                     AFRAME.utils.entity.setComponentProperty(main, 'geometry', {
                         primitive: 'cylinder', openEnded: true, thetaStart: ts, thetaLength: tl,
-                        height: val.size.h, radius: val.size.w
+                        height: val.size.h, radius: val.size.w, segmentsHeight: val.map ? 180 : 18, segmentsRadial: val.map ? 360 : 36
                     });
                 } else {
                     AFRAME.utils.entity.setComponentProperty(main, 'geometry', {
-                        primitive: 'sphere', radius: val.size.w/2, phiStart: -90
+                        primitive: 'sphere', radius: val.size.w/2, phiStart: -90, segmentsHeight: val.map ? 180 : 18, segmentsWidth: val.map ? 360 : 36
                     });
                 }
 

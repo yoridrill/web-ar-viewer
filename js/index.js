@@ -107,6 +107,7 @@ var webArViewer = webArViewer || {};
             var swPreview = document.getElementById('swPreview');
             var swHelp = document.getElementById('swHelp');
             var helpContent = document.getElementById('helpContent');
+            var toggleCamera = document.getElementById('toggleCamera');
 
             swHelp.addEventListener('click', function() {
                 helpContent.classList.toggle('hide');
@@ -127,19 +128,24 @@ var webArViewer = webArViewer || {};
 
             swMarker.addEventListener('click', function() {
                 if(!this.classList.contains('current')) {
-                    location.href = location.search.replace('&gyro=1', '').replace('&preview=1', '');
+                    location.replace(location.search.replace('&gyro=1', '').replace('&preview=1', ''));
                 }
             });
             swGyro.addEventListener('click', function() {
                 if(!this.classList.contains('current')) {
-                    location.href = location.search.replace('&preview=1', '') + '&gyro=1';
+                    location.replace(location.search.replace('&preview=1', '') + '&gyro=1');
                 }
             });
             swPreview.addEventListener('click', function() {
                 if(!this.classList.contains('current')) {
-                    location.href = location.search.replace('&gyro=1', '') + '&preview=1';
+                    location.replace(location.search.replace('&gyro=1', '') + '&preview=1');
                 }
             });
+            if (toggleCamera) {
+                toggleCamera.addEventListener('click', function() {
+                    location.pathname = location.pathname.match(/face/) ? '' : '/face/';
+                });
+            }
         },
         setWrap : function() {
             var self = this;
@@ -200,7 +206,7 @@ var webArViewer = webArViewer || {};
                 var wrap = document.createElement('a-marker');
                 wrap.setAttribute('preset', 'custom');
                 wrap.setAttribute('type', 'pattern');
-                wrap.setAttribute('url', 'asset/ar0.patt');
+                wrap.setAttribute('url', 'https://yoridrill.github.io/web-ar-viewer/asset/ar0.patt');
             }
             self.wrap = wrap;
         },
@@ -333,7 +339,7 @@ var webArViewer = webArViewer || {};
                         var arMarker = document.createElement('a-marker');
                         arMarker.setAttribute('preset', 'custom');
                         arMarker.setAttribute('type', 'pattern');
-                        arMarker.setAttribute('url', 'asset/ar' + idx + '.patt');
+                        arMarker.setAttribute('url', 'https://yoridrill.github.io/web-ar-viewer/asset/ar' + idx + '.patt');
 
                         self.arData[idx].shadow && arMarker.appendChild(self.arData[idx].shadow);
                         self.arData[idx].main && arMarker.appendChild(self.arData[idx].main);

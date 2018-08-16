@@ -11,7 +11,7 @@
     <title>WebARビューア</title>
     <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-animation-component@^5.0.0/dist/aframe-animation-component.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.6.0/aframe/build/aframe-ar.min.js"></script>
+    <script src="https://yoridrill.github.io/web-ar-viewer/js/ar-facingmode-user-min.js"></script>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/gif-shader-min.js?=1"></script>
 
     <style>
@@ -87,12 +87,12 @@
             vertical-align: -30%;
             width: 20px;
             height: 20px;
-            background: url('asset/camera.png') 50% 50%/70% 55% no-repeat rgba(0,0,0,.7);
+            background: url('../asset/camera.png') 50% 50%/70% 55% no-repeat rgba(0,0,0,.7);
         }
         #toggleCamera {
             display: block;
             z-index: 2;
-            background: url('asset/camera.png') 50% 50%/70% 80% no-repeat rgba(0,0,0,.35);
+            background: url('../asset/camera.png') 50% 50%/70% 80% no-repeat rgba(0,0,0,.35);
             bottom: 0;
             min-width: 45px;
             min-height: 30px;
@@ -112,18 +112,18 @@
 <body>
     <a class="toGen" href="https://web-ar-generator.firebaseapp.com/">＜ GENERATOR</a>
     <div class="switch">
-        <a id="swMarker" class="swItem"><img src="asset/marker.png" width="30"></a>
-        <a id="swGyro" class="swItem"><img src="asset/gyro.png" width="30"></a>
-        <a id="swPreview" class="swItem"><img src="asset/preview.png" width="30"></a>
-        <a id="swHelp" class="swItem"><img src="asset/help.png" width="30"></a>
+        <a id="swMarker" class="swItem"><img src="../asset/marker.png" width="30"></a>
+        <a id="swGyro" class="swItem"><img src="../asset/gyro.png" width="30"></a>
+        <a id="swPreview" class="swItem"><img src="../asset/preview.png" width="30"></a>
+        <a id="swHelp" class="swItem"><img src="../asset/help.png" width="30"></a>
     </div>
     <div id="helpContent" class="hide">
-        <p><img src="asset/marker.png" width="20"> マーカー画像をカメラで映すことでAR表示</p>
-        <p><img src="asset/gyro.png" width="20"> スマホのジャイロセンサーでAR表示</p>
-        <p><img src="asset/preview.png" width="20"> 中央固定表示（上下スワイプでズーム）</p>
+        <p><img src="../asset/marker.png" width="20"> マーカー画像をカメラで映すことでAR表示</p>
+        <p><img src="../asset/gyro.png" width="20"> スマホのジャイロセンサーでAR表示</p>
+        <p><img src="../asset/preview.png" width="20"> 中央固定表示（上下スワイプでズーム）</p>
         <p>
             <div class="tcIcon"></div>
-            インカメラがある場合、そちらに切り替え
+            アウトカメラがある場合、そちらに切り替え
         </p>
         <p>
             <div class="vrIcon"></div>

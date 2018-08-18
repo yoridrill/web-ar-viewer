@@ -324,9 +324,9 @@
 	          return;
 	        }
 	        /* parse data */
-	        (0, _gifsparser.parseGIF)(arr, function (times, cnt, frames, compactFlg) {
+	        (0, _gifsparser.parseGIF)(arr, function (times, cnt, frames, disposalMethods) {
 	          /* store data */
-	          var newData = { status: 'success', src: src, times: times, cnt: cnt, frames: frames, compactFlg: compactFlg, timestamp: Date.now() };
+	          var newData = { status: 'success', src: src, times: times, cnt: cnt, frames: frames, disposalMethods: disposalMethods, timestamp: Date.now() };
 	          /* callbacks */
 	          if (srcData.callbacks) {
 	            srcData.callbacks.forEach(function (cb) {
@@ -516,10 +516,17 @@
 	   * @private
 	   */
 	  __draw: function __draw() {
-		 if (!this.__compactFlg) {
-			 this.__clearCanvas();
-		 }
-	     this.__ctx.drawImage(this.__frames[this.__frameIdx], 0, 0, this.__width, this.__height); this.__texture.needsUpdate = true;
+		var prevIdx = this.__frameIdx ? this.__frameIdx-1 : this.__frames.length-1;
+
+		if (this.__disposalMethods[prevIdx] === 2) {
+  			this.__clearCanvas();
+  		} else if (this.__frameIdx > 1 && this.__disposalMethods[prevIdx] === 3) {
+  			this.__clearCanvas();
+  			this.__ctx.drawImage(this.__frames[this.__frameIdx-2], 0, 0, this.__width, this.__height);
+  		}
+
+	    this.__ctx.drawImage(this.__frames[this.__frameIdx], 0, 0, this.__width, this.__height);
+		this.__texture.needsUpdate = true;
 	  },
 
 
@@ -540,7 +547,7 @@
 	    var times = _ref.times;
 	    var cnt = _ref.cnt;
 	    var frames = _ref.frames;
-		var compactFlg = _ref.compactFlg;
+		var disposalMethods = _ref.disposalMethods;
 
 	    log('__ready');
 	    this.__textureSrc = src;
@@ -548,7 +555,7 @@
 	    cnt ? this.__loopCnt = cnt : this.__infinity = true;
 	    this.__frames = frames;
 	    this.__frameCnt = times.length;
-		this.__compactFlg = compactFlg;
+		this.__disposalMethods = disposalMethods;
 	    this.__startTime = Date.now();
 	    this.__width = THREE.Math.floorPowerOfTwo(frames[0].width);
 	    this.__height = THREE.Math.floorPowerOfTwo(frames[0].height);
@@ -582,7 +589,7 @@
 	    this.__infinity = false;
 	    this.__loopCnt = 0;
 	    this.__frames = null;
-		this.__compactFlg = false;
+		this.__disposalMethods = null;
 	    this.__textureSrc = null;
 	  }
 	});
@@ -608,7 +615,7 @@
 	  var graphicControl = null;
 	  var imageData = null;
 	  var frames = [];
-	  var compactFlg = false;
+	  var disposalMethods = [];
 	  var loopCnt = 0;
 	  if (gif[0] === 0x47 && gif[1] === 0x49 && gif[2] === 0x46 && // 'GIF'
 	  gif[3] === 0x38 && (gif[4] === 0x39 || gif[4] === 0x37) && gif[5] === 0x61) {
@@ -628,7 +635,7 @@
 	          }
 			  if(label === 0xf9) {
 				  graphicControl = gif.subarray(offset, pos + 1);
-				  compactFlg = !!gif[pos + 2];
+				  disposalMethods.push(graphicControl[3] >> 2 & 7);
 			  }
 	        } else {
 	          errorCB && errorCB('parseGIF: unknown label');break;
@@ -676,7 +683,7 @@
 	        frames[i] = this;
 	        if (loadCnt === frames.length) {
 	          cnv = null;
-	          successCB && successCB(delayTimes, loopCnt, frames, compactFlg);
+	          successCB && successCB(delayTimes, loopCnt, frames, disposalMethods);
 	        } else {
 	          imageFix(++i);
 	        }

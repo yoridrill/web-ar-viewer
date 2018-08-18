@@ -11,6 +11,7 @@ var webArViewer = webArViewer || {};
             if(this.setArData()) {
                 this.setWrap();
                 this.createModel();
+                this.setScene();
             }
             this.setSwitcher();
         },
@@ -40,20 +41,10 @@ var webArViewer = webArViewer || {};
 
             var assets = document.createElement('a-assets');
             assets.setAttribute('timeout', '9000');
-            var arData = new Array(self.C.arNum+1).join('0').split('');
-
-            if (!arData.some(function(val, idx) {
-                return self.arg['i' + idx];
-            })) {
-                // 画像一つもなかった
-                if (window.confirm('画像情報が1つも取得できませんでした。\nジェネレータで再度作り直してください。')) {
-                    location.href = "https://web-ar-generator.firebaseapp.com/";
-                }
-                return false;
-            }
+            var arData = new Array(self.C.arNum);
 
             // データの準備
-            arData.forEach(function(val, idx) {
+            for (var idx = 0; idx < self.C.arNum; idx=(idx+1)|0) {
                 // アセット読み込み
                 if (self.arg['i' + idx]) {
                     var source = document.createElement('img');
@@ -93,7 +84,17 @@ var webArViewer = webArViewer || {};
                 dataObj.isGif = !!(self.arg['i' + idx]||'').match(/\.gif$/i);
 
                 arData[idx] = dataObj;
-            });
+            }
+
+            if (!arData.some(function(val, idx) {
+                return self.arg['i' + idx];
+            })) {
+                // 画像一つもなかった
+                if (window.confirm('画像情報が1つも取得できませんでした。\nジェネレータで再度作り直してください。')) {
+                    location.href = "https://web-ar-generator.firebaseapp.com/";
+                }
+                return false;
+            }
 
             webArViewer.scene.appendChild(assets);
             self.arData = arData;
@@ -114,7 +115,7 @@ var webArViewer = webArViewer || {};
                 swHelp.classList.toggle('current');
             });
 
-            if(!self.arData  || location.pathname.match(/vr/)) {
+            if(!self.arData || location.pathname.match(/vr/)) {
                 return false;
             }
 
@@ -150,72 +151,18 @@ var webArViewer = webArViewer || {};
         setWrap : function() {
             var self = this;
 
-            if (location.pathname.match(/vr/)) {
-                var wrap = document.createElement('a-entity');
-                var vrPos = self.arg.vrPos ? decodeURI(self.arg.vrPos) : '0 0 -4';
-                wrap.setAttribute('position', vrPos);
-            } else if (self.arg.preview) {
-                var wrap = document.createElement('a-entity');
-                wrap.setAttribute('position', '0 0 -15');
-                wrap.setAttribute('rotation', '25 0 0');
-
-                var camera = document.querySelector('a-camera-static');
-
-                var deviceEvents = {
-                    Touch     : typeof document.ontouchstart !== 'undefined',
-                    Pointer   : window.navigator.pointerEnabled,
-                    MSPointer : window.navigator.msPointerEnabled
-                };
-
-                var eventNames = {
-                    start     : deviceEvents.Pointer ? 'pointerdown' : deviceEvents.MSPointer ? 'MSPointerDown' : deviceEvents.Touch ? 'touchstart' : 'mousedown',
-                    move      : deviceEvents.Pointer ? 'pointermove' : deviceEvents.MSPointer ? 'MSPointerMove' : deviceEvents.Touch ? 'touchmove'  : 'mousemove',
-                    end       : deviceEvents.Pointer ? 'pointerup'   : deviceEvents.MSPointer ? 'MSPointerUp'   : deviceEvents.Touch ? 'touchend'   : 'mouseup',
-                    click     : 'click'
-                };
-
-                var prevPageY;
-                var zoomRate = 1;
-
-                webArViewer.scene.addEventListener(eventNames.start, function(e) {
-                    var event = e.changedTouches ? e.changedTouches[0] : e;
-                    prevPageY = event.pageY;
-                });
-                webArViewer.scene.addEventListener(eventNames.move, function(e) {
-                    var event = e.changedTouches ? e.changedTouches[0] : e;
-                    if(prevPageY) {
-                        zoomRate += (event.pageY - prevPageY) / webArViewer.scene.clientHeight / 5;
-
-                        AFRAME.utils.entity.setComponentProperty(wrap, 'animation__scale', {
-                            property: 'scale', dur: 5, easing: 'linear', loop: false, to: zoomRate + ' ' + zoomRate + ' ' + zoomRate
-                        });
-                    }
-                });
-                webArViewer.scene.addEventListener(eventNames.end, function(e) {
-                    prevPageY = null;
-                });
-            } else if (self.arg.gyro) {
-                var wrap = document.createElement('a-entity');
-                wrap.setAttribute('position', '0 -5 -8');
-
-                var camera = document.querySelector('a-camera-static');
-                camera.setAttribute('look-controls', 'look-controls');
-            } else if (self.arg.multi) {
-                return;
-            } else {
-                var wrap = document.createElement('a-marker');
-                wrap.setAttribute('preset', 'custom');
-                wrap.setAttribute('type', 'pattern');
-                wrap.setAttribute('url', 'https://yoridrill.github.io/web-ar-viewer/asset/ar0.patt');
-            }
-            self.wrap = wrap;
+            var offsetPos = self.arg.offsetPos ? decodeURI(self.arg.offsetPos) : '0 0 0';
+            self.wrap = document.createElement('a-entity');
+            self.wrap.setAttribute('position', offsetPos);
         },
         createModel : function() {
             var self = this;
 
-            self.arData.forEach(function(val, idx) {
+            for (var idx = 0; idx < self.C.arNum; idx=(idx+1)|0) {
+                var val = self.arData[idx];
+
                 if (!val.path) {
-                    return;
+                    continue;
                 }
 
                 if (idx === 4) {
@@ -239,7 +186,7 @@ var webArViewer = webArViewer || {};
                         webArViewer.scene.appendChild(light1);
                         webArViewer.scene.appendChild(light2);
                     }
-                    return;
+                    continue;
                 }
 
                 if (idx && val.isShadow) {
@@ -320,14 +267,17 @@ var webArViewer = webArViewer || {};
                     });
                 }
                 self.arData[idx].main = main;
-            });
+            }
+        },
+        setScene: function () {
+            var self = this;
 
             if (self.arg.multi) {
-                self.arData.forEach(function(val, idx) {
-                    if (!val.path || idx === 4) {
-                        return;
-                    }
-                    if (self.arg.gyro || self.arg.preview) {
+                if (self.arg.gyro || self.arg.preview) {
+                    for (var idx = 0; idx < self.C.arNum; idx=(idx+1)|0) {
+                        if (!self.arData[idx].path || idx === 4) {
+                            continue;
+                        }
                         var arObj = document.createElement('a-entity');
                         arObj.setAttribute('position', ['0 0 0', '2 0 -2.1', '0 0 -2.3', '-2 0 -2.2'][idx]);
 
@@ -335,7 +285,12 @@ var webArViewer = webArViewer || {};
                         self.arData[idx].main && arObj.appendChild(self.arData[idx].main);
 
                         self.wrap.appendChild(arObj);
-                    } else {
+                    }
+                } else {
+                    for (var idx = 0; idx < self.C.arNum; idx=(idx+1)|0) {
+                        if (!self.arData[idx].path || idx === 4) {
+                            continue;
+                        }
                         var arMarker = document.createElement('a-marker');
                         arMarker.setAttribute('preset', 'custom');
                         arMarker.setAttribute('type', 'pattern');
@@ -346,9 +301,7 @@ var webArViewer = webArViewer || {};
 
                         webArViewer.scene.appendChild(arMarker);
                     }
-                });
-                if (self.arg.gyro || self.arg.preview) {
-                    webArViewer.scene.appendChild(self.wrap);
+                    return;
                 }
             } else {
                 self.arData[0].main && !self.arData[0].isWarp && self.wrap.appendChild(self.arData[0].main);
@@ -361,9 +314,71 @@ var webArViewer = webArViewer || {};
                 self.arData[2].main && self.wrap.appendChild(self.arData[2].main);
                 self.arData[0].main && self.arData[0].isWarp && self.wrap.appendChild(self.arData[0].main);
                 self.arData[3].main && self.wrap.appendChild(self.arData[3].main);
-
-                webArViewer.scene.appendChild(self.wrap);
             }
+
+            if (location.pathname.match(/vr/)) {
+                var vrPos = self.arg.vrPos ? decodeURI(self.arg.vrPos) : '0 0 -4';
+                self.wrap.setAttribute('position', vrPos);
+            } else if (self.arg.preview) {
+                // self.wrap.object3D.position.z -= 15;
+                var wrapPos = self.wrap.getAttribute('position');
+                wrapPos.z -= 15;
+                self.wrap.setAttribute('position', AFRAME.utils.coordinates.stringify(wrapPos));
+                self.wrap.setAttribute('rotation', '25 0 0');
+
+                var deviceEvents = {
+                    Touch     : typeof document.ontouchstart !== 'undefined',
+                    Pointer   : window.navigator.pointerEnabled,
+                    MSPointer : window.navigator.msPointerEnabled
+                };
+
+                var eventNames = {
+                    start     : deviceEvents.Pointer ? 'pointerdown' : deviceEvents.MSPointer ? 'MSPointerDown' : deviceEvents.Touch ? 'touchstart' : 'mousedown',
+                    move      : deviceEvents.Pointer ? 'pointermove' : deviceEvents.MSPointer ? 'MSPointerMove' : deviceEvents.Touch ? 'touchmove'  : 'mousemove',
+                    end       : deviceEvents.Pointer ? 'pointerup'   : deviceEvents.MSPointer ? 'MSPointerUp'   : deviceEvents.Touch ? 'touchend'   : 'mouseup',
+                    click     : 'click'
+                };
+
+                var prevPageY;
+                var zoomRate = 1;
+
+                webArViewer.scene.addEventListener(eventNames.start, function(e) {
+                    var event = e.changedTouches ? e.changedTouches[0] : e;
+                    prevPageY = event.pageY;
+                });
+                webArViewer.scene.addEventListener(eventNames.move, function(e) {
+                    var event = e.changedTouches ? e.changedTouches[0] : e;
+                    if(prevPageY) {
+                        zoomRate += (event.pageY - prevPageY) / webArViewer.scene.clientHeight / 5;
+
+                        AFRAME.utils.entity.setComponentProperty(self.wrap, 'animation__scale', {
+                            property: 'scale', dur: 5, easing: 'linear', loop: false, to: zoomRate + ' ' + zoomRate + ' ' + zoomRate
+                        });
+                    }
+                });
+                webArViewer.scene.addEventListener(eventNames.end, function(e) {
+                    prevPageY = null;
+                });
+            } else if (self.arg.gyro) {
+                // self.wrap.object3D.position.y -= 5;
+                // self.wrap.object3D.position.z -= 8;
+                var wrapPos = self.wrap.getAttribute('position');
+                wrapPos.y -= 5;
+                wrapPos.z -= 8;
+                self.wrap.setAttribute('position', AFRAME.utils.coordinates.stringify(wrapPos));
+
+                var camera = document.querySelector('a-camera-static');
+                camera.setAttribute('look-controls', 'look-controls');
+            } else if (!self.arg.multi) {
+                var mWrap = document.createElement('a-marker');
+                mWrap.setAttribute('preset', 'custom');
+                mWrap.setAttribute('type', 'pattern');
+                mWrap.setAttribute('url', 'https://yoridrill.github.io/web-ar-viewer/asset/ar0.patt');
+                mWrap.appendChild(self.wrap);
+                webArViewer.scene.appendChild(mWrap);
+                return;
+            }
+            webArViewer.scene.appendChild(self.wrap);
         },
         // type: ['shadow' | 'main']
         positionVec3: function (idx, type) {

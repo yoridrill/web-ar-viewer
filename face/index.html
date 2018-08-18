@@ -10,10 +10,7 @@
     <meta property="og:image" content="https://yoridrill.github.io/web-ar-viewer/asset/share.png" />
     <title>WebARビューア</title>
     <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-animation-component@^5.0.0/dist/aframe-animation-component.min.js"></script>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/ar-facingmode-user-min.js"></script>
-    <script src="https://yoridrill.github.io/web-ar-viewer/js/gif-shader-min.js?=1"></script>
-
     <style>
         body {
             font-family: sans-serif;
@@ -125,10 +122,6 @@
             <div class="tcIcon"></div>
             アウトカメラがある場合、そちらに切り替え
         </p>
-        <p>
-            <div class="vrIcon"></div>
-            簡易VR表示（※長時間の視聴は避けてください。）
-        </p>
         <h4>対応端末</h4>
         <ul>
             <li>
@@ -140,13 +133,14 @@
         </ul>
     </div>
     <a id="toggleCamera"></a>
-    <a-scene embedded arjs="debugUIEnabled: false; sourceType: webcam;">
+    <a-scene embedded arjs="debugUIEnabled: false; sourceType: webcam;" vr-mode-ui="enabled: false">
         <a-entity light="type: ambient; color: #BBB"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 0.35" position="-2 10 5"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 0.17" position="0 -4 1"></a-entity>
         <a-camera-static/>
     </a-scene>
-    <canvas id="rightlens" style="position: absolute; top: 0px; left: 50%; z-index: -5;"></canvas>
+    <script src="https://unpkg.com/aframe-animation-component@^5.0.0/dist/aframe-animation-component.min.js"></script>
+    <script src="https://yoridrill.github.io/web-ar-viewer/js/gif-shader-min.js?=1"></script>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/index-min.js?=2"></script>
 </body>
 

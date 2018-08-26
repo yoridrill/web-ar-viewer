@@ -11,7 +11,20 @@ var webArViewer = webArViewer || {};
             if(this.setArData()) {
                 this.setWrap();
                 this.createModel();
+
+                var deviceEvents = {
+                    Touch     : typeof document.ontouchstart !== 'undefined',
+                    Pointer   : window.navigator.pointerEnabled,
+                    MSPointer : window.navigator.msPointerEnabled
+                };
+                this.eventNames = {
+                    start     : deviceEvents.Pointer ? 'pointerdown' : deviceEvents.MSPointer ? 'MSPointerDown' : deviceEvents.Touch ? 'touchstart' : 'mousedown',
+                    move      : deviceEvents.Pointer ? 'pointermove' : deviceEvents.MSPointer ? 'MSPointerMove' : deviceEvents.Touch ? 'touchmove'  : 'mousemove',
+                    end       : deviceEvents.Pointer ? 'pointerup'   : deviceEvents.MSPointer ? 'MSPointerUp'   : deviceEvents.Touch ? 'touchend'   : 'mouseup'
+                };
+
                 this.setScene();
+                this.setTapEvents();
             }
             this.setSwitcher();
         },
@@ -30,8 +43,11 @@ var webArViewer = webArViewer || {};
             arg.shodowList = arg.fs && (pad + parseInt(arg.fs, 16).toString(2)).slice(-1 * self.C.arNum).split('').reverse();
             arg.poyoList = arg.fp && (pad + parseInt(arg.fp, 16).toString(2)).slice(-1 * self.C.arNum).split('').reverse();
             arg.kiraList = arg.fk && (pad + parseInt(arg.fk, 16).toString(2)).slice(-1 * self.C.arNum).split('').reverse();
-            arg.decaList = arg.fd && (pad + parseInt(arg.fd, 16).toString(2)).slice(-1 * self.C.arNum).split('').reverse();
 
+            arg.turnList = arg.ft && (pad + parseInt(arg.ft, 16).toString(2)).slice(-1 * self.C.arNum).split('').reverse();
+            arg.guniList = arg.fg && (pad + parseInt(arg.fg, 16).toString(2)).slice(-1 * self.C.arNum).split('').reverse();
+
+            arg.decaList = arg.fd && (pad + parseInt(arg.fd, 16).toString(2)).slice(-1 * self.C.arNum).split('').reverse();
             arg.sizeList = arg.wh && (pad + pad + parseInt(arg.wh, 16).toString(10)).slice(-2 * self.C.arNum).match(/.{2}/g).reverse();
 
             self.arg = arg;
@@ -45,28 +61,18 @@ var webArViewer = webArViewer || {};
 
             // データの準備
             for (var idx = 0; idx < self.C.arNum; idx=(idx+1)|0) {
-                // アセット読み込み
-                if (self.arg['i' + idx]) {
-                    var source = document.createElement('img');
-                    source.setAttribute('crossorigin', 'anonymous');
-                    source.setAttribute('id', 'source' + idx);
-                    source.setAttribute('src', self.arg['i' + idx]);
-                    assets.appendChild(source);
 
-                    if (self.arg['m' + idx]) {
-                        var map = document.createElement('img');
-                        map.setAttribute('crossorigin', 'anonymous');
-                        map.setAttribute('id', 'map' + idx);
-                        map.setAttribute('src', self.arg['m' + idx]);
-                        assets.appendChild(map);
-                    }
-                }
                 var dataObj = { path: self.arg['i' + idx] };
                 dataObj.map = self.arg['m' + idx];
+                dataObj.tap = self.arg['t' + idx];
                 dataObj.isWarp = self.arg.warpList && !!Number(self.arg.warpList[idx]);
                 dataObj.isShadow = self.arg.shodowList && !!Number(self.arg.shodowList[idx]);
                 dataObj.isPoyo = self.arg.poyoList && !!Number(self.arg.poyoList[idx]);
                 dataObj.isKira = self.arg.kiraList && !!Number(self.arg.kiraList[idx]);
+
+                dataObj.isTurn = self.arg.turnList && !!Number(self.arg.turnList[idx]);
+                dataObj.isGuni = self.arg.guniList && !!Number(self.arg.guniList[idx]);
+
                 dataObj.isDeca = self.arg.decaList && !!Number(self.arg.decaList[idx]);
                 dataObj.size = self.arg.sizeList ? {
                     w: Number(self.arg.sizeList[idx][0])*0.9,
@@ -82,12 +88,46 @@ var webArViewer = webArViewer || {};
                     };
                 }
                 dataObj.isGif = !!(self.arg['i' + idx]||'').match(/\.gif$/i);
+                dataObj.hasMp4 = !!(self.arg['t' + idx]||'').match(/\.mp4$/i);
+
+                // アセット読み込み
+                if (dataObj.path) {
+                    var source = document.createElement('img');
+                    source.setAttribute('crossorigin', 'anonymous');
+                    source.setAttribute('id', 'source' + idx);
+                    source.setAttribute('src', dataObj.path);
+                    assets.appendChild(source);
+
+                    if (dataObj.map) {
+                        var map = document.createElement('img');
+                        map.setAttribute('crossorigin', 'anonymous');
+                        map.setAttribute('id', 'map' + idx);
+                        map.setAttribute('src', dataObj.map);
+                        assets.appendChild(map);
+                    }
+                    if (dataObj.tap) {
+                        self.tap = true;
+                        if (dataObj.hasMp4) {
+                            var tapEl = document.createElement('video');
+                            tapEl.setAttribute('webkit-playsinline', 'true');
+                            tapEl.setAttribute('playsinline', 'true');
+                            dataObj.tapEl = tapEl;
+                            dataObj.keyColor = self.arg['kc' + idx] ? decodeURI(self.arg['kc' + idx]) : '0.1 0.9 0.2'
+                        } else {
+                            var tapEl = document.createElement('img');
+                        }
+                        tapEl.setAttribute('crossorigin', 'anonymous');
+                        tapEl.setAttribute('id', 'tap' + idx);
+                        tapEl.setAttribute('src', dataObj.tap);
+                        assets.appendChild(tapEl);
+                    }
+                }
 
                 arData[idx] = dataObj;
             }
 
-            if (!arData.some(function(val, idx) {
-                return self.arg['i' + idx];
+            if (!arData.some(function(val) {
+                return val.path;
             })) {
                 // 画像一つもなかった
                 if (window.confirm('画像情報が1つも取得できませんでした。\nジェネレータで再度作り直してください。')) {
@@ -213,6 +253,19 @@ var webArViewer = webArViewer || {};
                             property: 'scale', dir: 'alternate', dur: 400, easing: 'easeInOutQuart', loop: true, to: '0.8 0.7 1'
                         });
                     }
+                    if (val.isTurn) {
+                        AFRAME.utils.entity.setComponentProperty(shadow, 'animation__turn', {
+                            property: 'scale', dir: 'alternate', dur: 100, loop: 4, from: '1 1 1', to: '0.1 1 1', startEvents: 'turn'
+                        });
+                    }
+                    if (val.isGuni) {
+                        AFRAME.utils.entity.setComponentProperty(shadow, 'animation__guni', {
+                            property: 'scale', dur: 600, easing: 'easeOutBack', to: '1.3 0.95 1', startEvents: 'guni'
+                        });
+                        AFRAME.utils.entity.setComponentProperty(shadow, 'animation__guniback', {
+                            property: 'scale', dur: 1000, easing: 'easeOutElastic', elasticity: 600, from: '1.35 0.9 1', to: '1 1 1', startEvents: 'guniback'
+                        });
+                    }
                     self.arData[idx].shadow = shadow;
                 }
 
@@ -264,6 +317,19 @@ var webArViewer = webArViewer || {};
                 if (idx === 0 && val.isShadow) {
                     AFRAME.utils.entity.setComponentProperty(main, 'animation__rot', {
                         property: 'rotation', dur: 20000, easing: 'linear', loop: true, to: (val.isWarp ? 0 : -90) + ' 360 0'
+                    });
+                }
+                if (val.isTurn) {
+                    AFRAME.utils.entity.setComponentProperty(main, 'animation__turn', {
+                        property: 'rotation', dur: 3000, easing: 'easeOutElastic', elasticity: 300, from: '0 0 0', to: '0 360 0', startEvents: 'turn'
+                    });
+                }
+                if (val.isGuni) {
+                    AFRAME.utils.entity.setComponentProperty(main, 'animation__guni', {
+                        property: 'scale', dur: 600, easing: 'easeOutBack', to: '1.3 0.95 1', startEvents: 'guni'
+                    });
+                    AFRAME.utils.entity.setComponentProperty(main, 'animation__guniback', {
+                        property: 'scale', dur: 1000, easing: 'easeOutElastic', elasticity: 600, from: '1.35 0.9 1', to: '1 1 1', startEvents: 'guniback'
                     });
                 }
                 self.arData[idx].main = main;
@@ -320,33 +386,19 @@ var webArViewer = webArViewer || {};
                 var vrPos = self.arg.vrPos ? decodeURI(self.arg.vrPos) : '0 0 -4';
                 self.wrap.setAttribute('position', vrPos);
             } else if (self.arg.preview) {
-                // self.wrap.object3D.position.z -= 15;
                 var wrapPos = self.wrap.getAttribute('position');
                 wrapPos.z -= 15;
                 self.wrap.setAttribute('position', AFRAME.utils.coordinates.stringify(wrapPos));
                 self.wrap.setAttribute('rotation', '25 0 0');
 
-                var deviceEvents = {
-                    Touch     : typeof document.ontouchstart !== 'undefined',
-                    Pointer   : window.navigator.pointerEnabled,
-                    MSPointer : window.navigator.msPointerEnabled
-                };
-
-                var eventNames = {
-                    start     : deviceEvents.Pointer ? 'pointerdown' : deviceEvents.MSPointer ? 'MSPointerDown' : deviceEvents.Touch ? 'touchstart' : 'mousedown',
-                    move      : deviceEvents.Pointer ? 'pointermove' : deviceEvents.MSPointer ? 'MSPointerMove' : deviceEvents.Touch ? 'touchmove'  : 'mousemove',
-                    end       : deviceEvents.Pointer ? 'pointerup'   : deviceEvents.MSPointer ? 'MSPointerUp'   : deviceEvents.Touch ? 'touchend'   : 'mouseup',
-                    click     : 'click'
-                };
-
                 var prevPageY;
                 var zoomRate = 1;
 
-                webArViewer.scene.addEventListener(eventNames.start, function(e) {
+                webArViewer.scene.addEventListener(self.eventNames.start, function(e) {
                     var event = e.changedTouches ? e.changedTouches[0] : e;
                     prevPageY = event.pageY;
                 });
-                webArViewer.scene.addEventListener(eventNames.move, function(e) {
+                webArViewer.scene.addEventListener(self.eventNames.move, function(e) {
                     var event = e.changedTouches ? e.changedTouches[0] : e;
                     if(prevPageY) {
                         zoomRate += (event.pageY - prevPageY) / webArViewer.scene.clientHeight / 5;
@@ -356,12 +408,10 @@ var webArViewer = webArViewer || {};
                         });
                     }
                 });
-                webArViewer.scene.addEventListener(eventNames.end, function(e) {
+                webArViewer.scene.addEventListener(self.eventNames.end, function(e) {
                     prevPageY = null;
                 });
             } else if (self.arg.gyro) {
-                // self.wrap.object3D.position.y -= 5;
-                // self.wrap.object3D.position.z -= 8;
                 var wrapPos = self.wrap.getAttribute('position');
                 wrapPos.y -= 5;
                 wrapPos.z -= 8;
@@ -421,6 +471,99 @@ var webArViewer = webArViewer || {};
                     };
                     return p[idx]();
                 }
+            }
+        },
+        setTapEvents: function () {
+            var self = this;
+
+            if (self.arg.ft) {
+                webArViewer.scene.addEventListener('click', function(e) {
+                    for (var idx = 0; idx < self.C.arNum; idx=(idx+1)|0) {
+                        if (self.arData[idx].path && self.arData[idx].isTurn) {
+                            self.arData[idx].main.emit('turn');
+                            self.arData[idx].isShadow && self.arData[idx].shadow.emit('turn');
+                        }
+                    }
+                });
+            }
+            if (self.arg.fg) {
+                webArViewer.scene.addEventListener(self.eventNames.start, function(e) {
+                    for (var idx = 0; idx < self.C.arNum; idx=(idx+1)|0) {
+                        if (self.arData[idx].path && self.arData[idx].isGuni) {
+                            self.arData[idx].main.emit('guni');
+                            self.arData[idx].isShadow && self.arData[idx].shadow.emit('guni');
+                        }
+                    }
+                });
+                webArViewer.scene.addEventListener(self.eventNames.end, function(e) {
+                    for (var idx = 0; idx < self.C.arNum; idx=(idx+1)|0) {
+                        if (self.arData[idx].path && self.arData[idx].isGuni) {
+                            self.arData[idx].main.emit('guniback');
+                            self.arData[idx].isShadow && self.arData[idx].shadow.emit('guniback');
+                        }
+                    }
+                });
+            }
+            if (self.tap) {
+                for (var idx = 0; idx < self.C.arNum; idx=(idx+1)|0) {
+                    var val = self.arData[idx];
+                    if (!val.tap) {
+                        continue;
+                    }
+                    val.mainTap = document.createElement('a-plane');
+                    AFRAME.utils.entity.setComponentProperty(val.mainTap, 'material', {
+                        shader: val.hasMp4 ? 'chromakey' : val.tap.match(/\.gif$/i) ? 'gif' : 'standard', npot: true, src: '#tap' + idx, displacementMap: val.map ? '#map' + idx : null, displacementBias: -0.5,
+                        side: 'double', transparent: true, alphaTest: 0.1, metalness: val.isKira ? 0.1 : 0, roughness: val.isKira ? 0.3 : 0.5, keyColor: val.hasMp4 ? val.keyColor: null
+                    });
+                    val.mainTap.setAttribute('visible', false);
+                    webArViewer.scene.appendChild(val.mainTap);
+
+                    if (val.isShadow) {
+                        val.shadowTap = document.createElement('a-plane');
+                        AFRAME.utils.entity.setComponentProperty(val.shadowTap, 'material', {
+                            shader: val.hasMp4 ? 'chromakey' : val.tap.match(/\.gif$/i) ? 'gif' : 'flat', npot: true, src: '#tap' + idx, transparent: true, alphaTest: 0.1,
+                            color: 'black', opacity: 0.3, depthTest: false, keyColor: val.hasMp4 ? val.keyColor: null
+                        });
+                        val.shadowTap.setAttribute('visible', false);
+                        webArViewer.scene.appendChild(val.shadowTap);
+                    }
+                }
+
+                webArViewer.scene.addEventListener('click', function(e) {
+                    for (var idx = 0; idx < self.C.arNum; idx=(idx+1)|0) {
+                        var val = self.arData[idx];
+
+                        if (!val.tap) {
+                            continue;
+                        }
+
+                        if (val.tapVisible) {
+                            val.tapVisible = false;
+                            val.main.object3DMap.mesh.material = val.mainDefaultMaterial;
+                            val.isShadow && (val.shadow.object3DMap.mesh.material = val.shadowDefaultMaterial);
+                            if (val.hasMp4) {
+                                val.tapEl.pause();
+                            }
+                        } else {
+                            val.tapVisible = true;
+                            if (!val.mainDefaultMaterial) {
+                                val.mainDefaultMaterial = val.main.object3DMap.mesh.material;
+                                val.mainTapMaterial = val.mainTap.object3DMap.mesh.material;
+
+                                if (val.isShadow) {
+                                    val.shadowDefaultMaterial = val.shadow.object3DMap.mesh.material;
+                                    val.shadowTapMaterial = val.shadowTap.object3DMap.mesh.material;
+                                }
+                            }
+                            val.main.object3DMap.mesh.material = val.mainTapMaterial;
+                            val.isShadow && (val.shadow.object3DMap.mesh.material = val.shadowTapMaterial);
+                            if (val.hasMp4) {
+                                val.tapEl.currentTime = 0;
+                                val.tapEl.play();
+                            }
+                        }
+                    }
+                }, true);
             }
         }
     };

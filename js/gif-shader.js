@@ -113,6 +113,7 @@
 	    this.material = new THREE.MeshStandardMaterial({ map: this.__texture });
 	    this.el.sceneEl.addBehavior(this);
 	    this.__addPublicFunctions();
+		this.__drawedIndex = 0;
 	    return this.material;
 	  },
 
@@ -516,17 +517,25 @@
 	   * @private
 	   */
 	  __draw: function __draw() {
-		var prevIdx = this.__frameIdx ? this.__frameIdx-1 : this.__frames.length-1;
+		var prevIdx = this.__frameIdx ? this.__frameIdx-1 : 0;
 
 		if (this.__disposalMethods[prevIdx] === 2) {
-  			this.__clearCanvas();
-  		} else if (this.__frameIdx > 1 && this.__disposalMethods[prevIdx] === 3) {
-  			this.__clearCanvas();
-  			this.__ctx.drawImage(this.__frames[this.__frameIdx-2], 0, 0, this.__width, this.__height);
-  		}
-
+		    this.__clearCanvas();
+		} else if (this.__disposalMethods[prevIdx] === 3 && this.__frameIdx > 1) {
+		    this.__clearCanvas();
+		    this.__ctx.drawImage(this.__frames[this.__frameIdx-2], 0, 0, this.__width, this.__height);
+		} else if (this.__disposalMethods[prevIdx] === 1 && prevIdx - this.__drawedIndex > 0) {
+		    for (var i = this.__drawedIndex+1; i <= prevIdx; i=(i+1)|0) {
+		        this.__ctx.drawImage(this.__frames[i], 0, 0, this.__width, this.__height);
+		        if (this.__disposalMethods[i] === 2) {
+		            this.__clearCanvas();
+		        }
+		    }
+		}
 	    this.__ctx.drawImage(this.__frames[this.__frameIdx], 0, 0, this.__width, this.__height);
 		this.__texture.needsUpdate = true;
+
+		this.__drawedIndex = this.__frameIdx;
 	  },
 
 

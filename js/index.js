@@ -151,7 +151,7 @@ var webArViewer = webArViewer || {};
             var toggleCamera = document.getElementById('toggleCamera');
 
             swHelp.addEventListener('click', function() {
-                helpContent.classList.toggle('hide');
+                helpContent.classList.toggle('show');
                 swHelp.classList.toggle('current');
             });
 
@@ -475,6 +475,18 @@ var webArViewer = webArViewer || {};
         },
         setTapEvents: function () {
             var self = this;
+
+            if (!self.arg.ft && !self.arg.fg && !self.tap) {
+                return;
+            } else {
+                var touchAt = document.getElementById('touch');
+                var touchImg = new Image(54, 40);
+                touchImg.src = 'https://yoridrill.github.io/web-ar-viewer/asset/touch.png';
+                touchImg.onload = function () {
+                    touchAt.appendChild(touchImg);
+                    touchAt.classList.add('attention');
+                };
+            }
 
             if (self.arg.ft) {
                 webArViewer.scene.addEventListener('click', function(e) {

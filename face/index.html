@@ -10,9 +10,10 @@
     <meta property="og:image" content="https://yoridrill.github.io/web-ar-viewer/asset/share.png" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>WebARビューア</title>
+    <link rel="stylesheet" href="https://yoridrill.github.io/web-ar-viewer/css/index-min.css">
     <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/ar-facingmode-user-min.js"></script>
-    <link rel="stylesheet" href="https://yoridrill.github.io/web-ar-viewer/css/index-min.css">
+    <script src="https://unpkg.com/aframe-animation-component@^5.0.0/dist/aframe-animation-component.min.js"></script>
 </head>
 
 <body>
@@ -47,9 +48,8 @@
         <a-entity light="type: ambient; color: #BBB"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 0.35" position="-2 10 5"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 0.17" position="0 -4 1"></a-entity>
-        <a-camera-static/>
+        <a-camera></a-camera>
     </a-scene>
-    <script src="https://unpkg.com/aframe-animation-component@^5.0.0/dist/aframe-animation-component.min.js"></script>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/gif-shader-min.js?=1"></script>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/aframe-chromakey-material-min.js"></script>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/index-min.js?=2"></script>

@@ -275,10 +275,19 @@ var webArViewer = webArViewer || {};
                 main.setAttribute('position', AFRAME.utils.coordinates.stringify(posVec3));
                 main.setAttribute('rotation', ((idx === 0 && !val.isWarp) ? -90 : 0) + ' 0 0');
 
-                AFRAME.utils.entity.setComponentProperty(main, 'material', {
-                    shader: val.isGif ? 'gif' : 'standard', npot: true, src: '#source' + idx, displacementMap: val.map ? '#map' + idx : null, displacementBias: -0.5,
-                    side: 'double', transparent: true, alphaTest: 0.1, metalness: val.isKira ? 0.1 : 0, roughness: val.isKira ? 0.3 : 0.5
-                });
+                var maObj = {
+                    shader: val.isGif ? 'gif' : 'standard',
+                    npot: true, src: '#source' + idx,
+                    side: 'double', transparent: true, alphaTest: 0.1,
+                    metalness: val.isKira ? 0.1 : 0, roughness: val.isKira ? 0.3 : 0.5
+                };
+
+                if (val.map) {
+                    maObj.displacementMap = '#map' + idx;
+                    maObj.displacementBias = -0.5;
+                }
+
+                AFRAME.utils.entity.setComponentProperty(main, 'material', maObj);
 
                 if (!val.isWarp) {
                     AFRAME.utils.entity.setComponentProperty(main, 'geometry', {
@@ -312,7 +321,6 @@ var webArViewer = webArViewer || {};
                     AFRAME.utils.entity.setComponentProperty(main, 'animation__scale', {
                         property: 'scale', dir: 'alternate', dur: 400, easing: 'easeOutQuad', loop: true, to: '0.94 1.06 1'
                     });
-
                 }
                 if (idx === 0 && val.isShadow) {
                     AFRAME.utils.entity.setComponentProperty(main, 'animation__rot', {
@@ -320,9 +328,15 @@ var webArViewer = webArViewer || {};
                     });
                 }
                 if (val.isTurn) {
-                    AFRAME.utils.entity.setComponentProperty(main, 'animation__turn', {
-                        property: 'rotation', dur: 3000, easing: 'easeOutElastic', elasticity: 300, from: '0 0 0', to: '0 360 0', startEvents: 'turn'
-                    });
+                    if (idx === 0 && val.isWarp) {
+                        AFRAME.utils.entity.setComponentProperty(main, 'animation__turn', {
+                            property: 'rotation', dur: 3000, easing: 'easeOutElastic', elasticity: 300, from: '-90 0 0', to: '-90 0 360', startEvents: 'turn'
+                        });
+                    } else {
+                        AFRAME.utils.entity.setComponentProperty(main, 'animation__turn', {
+                            property: 'rotation', dur: 3000, easing: 'easeOutElastic', elasticity: 300, from: '0 0 0', to: '0 360 0', startEvents: 'turn'
+                        });
+                    }
                 }
                 if (val.isGuni) {
                     AFRAME.utils.entity.setComponentProperty(main, 'animation__guni', {
@@ -386,6 +400,8 @@ var webArViewer = webArViewer || {};
                 var vrPos = self.arg.vrPos ? decodeURI(self.arg.vrPos) : '0 0 -4';
                 self.wrap.setAttribute('position', vrPos);
             } else if (self.arg.preview) {
+                var camera = document.querySelector('a-camera');
+                camera.setAttribute('look-controls-enabled', 'false');
                 var wrapPos = self.wrap.getAttribute('position');
                 wrapPos.z -= 15;
                 self.wrap.setAttribute('position', AFRAME.utils.coordinates.stringify(wrapPos));
@@ -416,9 +432,6 @@ var webArViewer = webArViewer || {};
                 wrapPos.y -= 5;
                 wrapPos.z -= 8;
                 self.wrap.setAttribute('position', AFRAME.utils.coordinates.stringify(wrapPos));
-
-                var camera = document.querySelector('a-camera-static');
-                camera.setAttribute('look-controls', 'look-controls');
             } else if (!self.arg.multi) {
                 var mWrap = document.createElement('a-marker');
                 mWrap.setAttribute('preset', 'custom');
@@ -480,7 +493,7 @@ var webArViewer = webArViewer || {};
                 return;
             } else {
                 var touchAt = document.getElementById('touch');
-                var touchImg = new Image(54, 40);
+                var touchImg = new Image(40, 54);
                 touchImg.src = 'https://yoridrill.github.io/web-ar-viewer/asset/touch.png';
                 touchImg.onload = function () {
                     touchAt.appendChild(touchImg);
@@ -523,19 +536,41 @@ var webArViewer = webArViewer || {};
                         continue;
                     }
                     val.mainTap = document.createElement('a-plane');
-                    AFRAME.utils.entity.setComponentProperty(val.mainTap, 'material', {
-                        shader: val.hasMp4 ? 'chromakey' : val.tap.match(/\.gif$/i) ? 'gif' : 'standard', npot: true, src: '#tap' + idx, displacementMap: val.map ? '#map' + idx : null, displacementBias: -0.5,
-                        side: 'double', transparent: true, alphaTest: 0.1, metalness: val.isKira ? 0.1 : 0, roughness: val.isKira ? 0.3 : 0.5, keyColor: val.hasMp4 ? val.keyColor: null
-                    });
+
+                    var maObj = {
+                        shader: val.tap.match(/\.gif$/i) ? 'gif' : 'standard', npot: true, src: '#tap' + idx,
+                        side: 'double', transparent: true, alphaTest: 0.1, metalness: val.isKira ? 0.1 : 0, roughness: val.isKira ? 0.3 : 0.5
+                    };
+
+                    if (val.map) {
+                        maObj.displacementMap = '#map' + idx;
+                        maObj.displacementBias = -0.5;
+                    }
+
+                    if (val.hasMp4) {
+                        maObj.shader = 'chromakey';
+                        maObj.keyColor = val.keyColor;
+                    }
+
+                    AFRAME.utils.entity.setComponentProperty(val.mainTap, 'material', maObj);
                     val.mainTap.setAttribute('visible', false);
                     webArViewer.scene.appendChild(val.mainTap);
 
                     if (val.isShadow) {
                         val.shadowTap = document.createElement('a-plane');
-                        AFRAME.utils.entity.setComponentProperty(val.shadowTap, 'material', {
-                            shader: val.hasMp4 ? 'chromakey' : val.tap.match(/\.gif$/i) ? 'gif' : 'flat', npot: true, src: '#tap' + idx, transparent: true, alphaTest: 0.1,
-                            color: 'black', opacity: 0.3, depthTest: false, keyColor: val.hasMp4 ? val.keyColor: null
-                        });
+
+                        var shaObj = {
+                            shader: val.tap.match(/\.gif$/i) ? 'gif' : 'flat', npot: true, src: '#tap' + idx, transparent: true, alphaTest: 0.1,
+                            color: 'black', opacity: 0.3, depthTest: false
+                        };
+
+                        if (val.hasMp4) {
+                            shaObj.shader = 'chromakey';
+                            shaObj.keyColor = val.keyColor;
+                        }
+
+                        AFRAME.utils.entity.setComponentProperty(val.shadowTap, 'material', shaObj);
+
                         val.shadowTap.setAttribute('visible', false);
                         webArViewer.scene.appendChild(val.shadowTap);
                     }

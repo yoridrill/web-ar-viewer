@@ -400,8 +400,6 @@ var webArViewer = webArViewer || {};
                 var vrPos = self.arg.vrPos ? decodeURI(self.arg.vrPos) : '0 0 -4';
                 self.wrap.setAttribute('position', vrPos);
             } else if (self.arg.preview) {
-                var camera = document.querySelector('a-camera');
-                camera.setAttribute('look-controls-enabled', 'false');
                 var wrapPos = self.wrap.getAttribute('position');
                 wrapPos.z -= 15;
                 self.wrap.setAttribute('position', AFRAME.utils.coordinates.stringify(wrapPos));
@@ -428,6 +426,8 @@ var webArViewer = webArViewer || {};
                     prevPageY = null;
                 });
             } else if (self.arg.gyro) {
+                var camera = document.querySelector('a-camera-static');
+                camera.setAttribute('look-controls', 'true');
                 var wrapPos = self.wrap.getAttribute('position');
                 wrapPos.y -= 5;
                 wrapPos.z -= 8;

@@ -191,9 +191,9 @@ var webArViewer = webArViewer || {};
         setWrap : function() {
             var self = this;
 
-            var offsetPos = self.arg.offset ? decodeURI(self.arg.offset) : '0 0 0';
+            self.offsetPos = self.arg.offset ? decodeURI(self.arg.offset) : '0 0 0';
             self.wrap = document.createElement('a-entity');
-            self.wrap.setAttribute('position', offsetPos);
+            self.wrap.setAttribute('position', self.offsetPos);
         },
         createModel : function() {
             var self = this;
@@ -400,7 +400,7 @@ var webArViewer = webArViewer || {};
                 var vrPos = self.arg.vrPos ? decodeURI(self.arg.vrPos) : '0 0 -4';
                 self.wrap.setAttribute('position', vrPos);
             } else if (self.arg.preview) {
-                var wrapPos = self.wrap.getAttribute('position');
+                var wrapPos = AFRAME.utils.coordinates.parse(self.offsetPos);
                 wrapPos.z -= 15;
                 self.wrap.setAttribute('position', AFRAME.utils.coordinates.stringify(wrapPos));
                 self.wrap.setAttribute('rotation', '25 0 0');
@@ -428,7 +428,7 @@ var webArViewer = webArViewer || {};
             } else if (self.arg.gyro) {
                 var camera = document.querySelector('a-camera-static');
                 camera.setAttribute('look-controls', 'true');
-                var wrapPos = self.wrap.getAttribute('position');
+                var wrapPos = AFRAME.utils.coordinates.parse(self.offsetPos);
                 wrapPos.y -= 5;
                 wrapPos.z -= 8;
                 self.wrap.setAttribute('position', AFRAME.utils.coordinates.stringify(wrapPos));

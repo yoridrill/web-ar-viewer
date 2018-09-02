@@ -191,7 +191,7 @@ var webArViewer = webArViewer || {};
         setWrap : function() {
             var self = this;
 
-            var offsetPos = self.arg.offsetPos ? decodeURI(self.arg.offsetPos) : '0 0 0';
+            var offsetPos = self.arg.offset ? decodeURI(self.arg.offset) : '0 0 0';
             self.wrap = document.createElement('a-entity');
             self.wrap.setAttribute('position', offsetPos);
         },

@@ -37,6 +37,9 @@ var webArViewer = webArViewer || {};
                 var kv = pair[i].split('=');
                 arg[kv[0]] = decodeURIComponent(kv[1]);
             }
+
+            if (arg.gyro && !location.pathname.match('gyro')) location.replace(location.pathname + 'gyro.html' + location.search);
+
             var pad = new Array(self.C.arNum).join('0');
 
             arg.warpList = arg.fw && (pad + parseInt(arg.fw, 16).toString(2)).slice(-1 * self.C.arNum).split('').reverse();
@@ -169,17 +172,17 @@ var webArViewer = webArViewer || {};
 
             swMarker.addEventListener('click', function() {
                 if(!this.classList.contains('current')) {
-                    location.replace(location.search.replace('&gyro=1', '').replace('&preview=1', ''));
+                    location.replace(location.pathname.replace('gyro.html', '') + location.search.replace('&gyro=1', '').replace('&preview=1', ''));
                 }
             });
             swGyro.addEventListener('click', function() {
                 if(!this.classList.contains('current')) {
-                    location.replace(location.search.replace('&preview=1', '') + '&gyro=1');
+                    location.replace('gyro.html' + location.search.replace('&preview=1', '') + '&gyro=1');
                 }
             });
             swPreview.addEventListener('click', function() {
                 if(!this.classList.contains('current')) {
-                    location.replace(location.search.replace('&gyro=1', '') + '&preview=1');
+                    location.replace(location.pathname.replace('gyro.html', '') + location.search.replace('&gyro=1', '') + '&preview=1');
                 }
             });
             if (toggleCamera) {

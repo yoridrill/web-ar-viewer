@@ -11,26 +11,29 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>WebARビューア</title>
     <link rel="stylesheet" href="https://yoridrill.github.io/web-ar-viewer/css/index-min.css">
-    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
-    <script src="https://yoridrill.github.io/web-ar-viewer/js/ar-facingmode-user-min.js"></script>
-    <script src="https://unpkg.com/aframe-animation-component@^5.0.0/dist/aframe-animation-component.min.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 </head>
 
 <body>
     <a class="toGen" href="https://web-ar-generator.firebaseapp.com/">＜ GENERATOR</a>
     <div class="switch">
-        <a id="swMarker" class="swItem"><img src="../asset/marker.png" width="30"></a>
-        <a id="swGyro" class="swItem"><img src="../asset/gyro.png" width="30"></a>
-        <a id="swPreview" class="swItem"><img src="../asset/preview.png" width="30"></a>
-        <a id="swHelp" class="swItem"><img src="../asset/help.png" width="30"></a>
+        <a id="swMarker" class="swItem"><img src="asset/marker.png" width="30"></a>
+        <a id="swGyro" class="swItem"><img src="asset/gyro.png" width="30"></a>
+        <a id="swPreview" class="swItem"><img src="asset/preview.png" width="30"></a>
+        <a id="swHelp" class="swItem"><img src="asset/help.png" width="30"></a>
     </div>
     <div id="helpContent" style="opacity: 0">
-        <p><img src="../asset/marker.png" width="20"> マーカー画像をカメラで映すことでAR表示</p>
-        <p><img src="../asset/gyro.png" width="20"> スマホのジャイロセンサーでAR表示</p>
-        <p><img src="../asset/preview.png" width="20"> 中央固定表示（上下スワイプでズーム）</p>
+        <p><img src="asset/marker.png" width="20"> マーカー画像をカメラで映すことでAR表示</p>
+        <p><img src="asset/gyro.png" width="20"> スマホのジャイロセンサーでAR表示</p>
+        <p><img src="asset/preview.png" width="20"> 中央固定表示（上下スワイプでズーム）</p>
         <p>
             <div class="tcIcon"></div>
-            アウトカメラがある場合、そちらに切り替え
+            インカメラがある場合、そちらに切り替え
+        </p>
+        <p>
+            <div class="vrIcon"></div>
+            簡易VR表示（※長時間の視聴は避けてください。）
         </p>
         <h4>対応端末</h4>
         <ul>
@@ -44,13 +47,14 @@
     </div>
     <a id="toggleCamera"></a>
     <div id="touch"></div>
-    <a-scene embedded arjs="debugUIEnabled: false; sourceType: webcam;" vr-mode-ui="enabled: false">
+    <a-scene embedded arjs="debugUIEnabled: false; sourceType: webcam;">
         <a-entity light="type: ambient; color: #BBB"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 0.35" position="-2 10 5"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 0.17" position="0 -4 1"></a-entity>
         <a-camera-static/>
     </a-scene>
-    <script src="https://yoridrill.github.io/web-ar-viewer/js/gif-shader-min.js?=1"></script>
+    <canvas id="rightlens" style="position: absolute; top: 0px; left: 50%; z-index: -5;"></canvas>
+    <script src="https://yoridrill.github.io/web-ar-viewer/js/gif-shader-min.js?=2"></script>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/aframe-chromakey-material-min.js"></script>
     <script src="https://yoridrill.github.io/web-ar-viewer/js/index-min.js"></script>
 </body>
